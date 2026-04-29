@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm --version)",
+      "Bash(tsc --version)",
+      "Bash(bd --help)",
+      "Bash(bd mcp *)",
+      "Bash(npx -y @smithery/cli@latest skill add sd0xdev/codex-brainstorm --agent claude-code)",
+      "Bash(bd create *)",
+      "Bash(bd update *)",
+      "Bash(bd dep *)",
+      "Bash(bd link *)",
+      "Bash(bd show *)",
+      "Bash(bd query *)",
+      "Bash(bd list *)",
+      "Bash(bd export *)",
+      "Bash(bd statuses *)",
+      "Bash(bd types *)",
+      "Bash(claude --version)",
+      "Bash(claude -p --help)",
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "Bash(npx tsc *)",
+      "Bash(npm view *)",
+      "Bash(node dist/cli.js --help)",
+      "Bash(node dist/cli.js --version)",
+      "Bash(node dist/cli.js)",
+      "Bash(echo \"exit=$?\")",
+      "Bash(node dist/cli.js --bogus-flag)",
+      "Bash(npx tsx *)",
+      "Bash(env)",
+      "Bash(~/.local/bin/claude --version)",
+      "Bash(~/.local/bin/claude --help)"
+    ]
+  }
+}
