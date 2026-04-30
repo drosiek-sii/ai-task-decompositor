@@ -1,10 +1,15 @@
 # agent-beads
 
-Local TypeScript CLI that turns a high-level prompt or a `.md` plan into **small, atomic JIRA-style tasks**, validates each one through the **codex-brainstorm** skill, and only then writes the survivors to **Beads** (`bd` CLI).
+Local TypeScript CLI for working with [Beads](https://github.com/steveyegge/beads). Two modes:
 
-The point: stop hand-writing tickets. One plan in, a list of dev-ready tickets out — each with a title, description, acceptance criteria, and dependencies.
+1. **Drafter** — turns a high-level prompt or a `.md` plan into **small, atomic JIRA-style tasks**, validates each one through the **codex-brainstorm** skill, and only then writes the survivors to Beads.
+2. **Exporter** — reads every issue from the local Beads database and writes a snapshot to `.md` + `.json` files for review, archiving, or sharing.
+
+The point: stop hand-writing tickets, and have a one-shot way to turn the current Beads state into a portable, human-readable artifact.
 
 ## What it actually does
+
+### Drafter mode (default)
 
 1. **Reads the input** — either a prompt passed as an argument, or the path to a markdown file (`--file`).
 2. **Parses the markdown** — picks up sections, lists, and existing "task-like" blocks (if the plan already contains `### Task: ...` sections, they get refined and standardized rather than rewritten from scratch).
@@ -14,6 +19,13 @@ The point: stop hand-writing tickets. One plan in, a list of dev-ready tickets o
 6. **Prints a summary** — what came in, what passed, what failed, what the dependency graph looks like, what assumptions the drafter made.
 
 **Hard rule:** a task does not reach Beads without a positive validation pass. `--dry-run` validates everything but writes nothing.
+
+### Export mode
+
+1. **Reads every issue** from the local Beads database via `bd export` (full payload — title, description, acceptance criteria, status, priority, labels, dependencies).
+2. **Writes a JSON snapshot** with metadata (timestamp, count, filter flags) and the full issue list — round-trip-safe, ready for tooling.
+3. **Renders a human-readable markdown report** grouped by status (In Progress → Open → Blocked → Deferred → Closed), sorted by priority within each group, with a dedicated "Dependencies" line per issue.
+4. **Drops both files** into `./beads-exports/` (configurable via `--output-dir`), filename pattern: `beads-export-<ISO timestamp>.{md,json}`.
 
 ## Requirements
 
@@ -47,6 +59,8 @@ alias agent-beads="node $(pwd)/dist/cli.js"
 
 ## Usage
 
+### Drafter
+
 ```bash
 # 1. initialize a Beads database in the project where you want the tasks
 bd init
@@ -64,7 +78,33 @@ agent-beads --file ./plan.md --dry-run
 agent-beads --file ./plan.md --verbose
 ```
 
-### All flags
+### Export
+
+```bash
+# write every issue from the local Beads database to ./beads-exports/
+agent-beads export
+
+# pick a different folder
+agent-beads export --output-dir ./snapshots
+
+# only currently open issues (skip closed ones)
+agent-beads export --open-only
+
+# verbose mode prints debug info about each stage
+agent-beads export --verbose
+```
+
+After running you get two timestamped files:
+
+```
+beads-exports/
+├── beads-export-2026-04-30T11-35-51-863Z.json
+└── beads-export-2026-04-30T11-35-51-863Z.md
+```
+
+The `.md` file groups issues by status, sorts by priority, and prints each one with its description, acceptance criteria, dependencies, and metadata. The `.json` file contains a `{generatedAt, count, openOnly, issues[]}` envelope with the full bd payload — easy to consume from another tool.
+
+### Drafter flags
 
 | Flag | Meaning |
 |---|---|
@@ -78,6 +118,15 @@ agent-beads --file ./plan.md --verbose
 | `--label <name>` | Label applied to every created bead. Repeatable. |
 | `--help, -h` | Help |
 | `--version` | Version |
+
+### Export flags
+
+| Flag | Meaning |
+|---|---|
+| `--output-dir <path>` | Where to write the export files (default: `./beads-exports`) |
+| `--open-only` | Skip closed issues (default: include all) |
+| `--verbose, -v` | Print resolved file paths and per-stage debug log |
+| `--help, -h` | Help |
 
 ### Environment variables
 
@@ -143,6 +192,11 @@ src/
 │   ├── BeadsMcpClient.ts           # stub for the future MCP transport
 │   ├── mapTaskToBd.ts              # JIRA → bd flags
 │   └── persistGraph.ts             # 2-phase: create then wire deps
+├── export/
+│   ├── types.ts                    # BdIssue, BdDependency, ExportOptions, ExportResult
+│   ├── BdExporter.ts               # shells `bd export`, parses JSONL
+│   ├── renderMarkdown.ts           # issues → grouped, sorted markdown
+│   └── exportToFiles.ts            # orchestrator: write .json + .md
 ├── output/printSummary.ts          # final report
 └── utils/extractJson.ts            # tolerant JSON extractor
 
@@ -195,3 +249,5 @@ Verifies that the markdown parser detects sections and task hints, the normalize
 - [ ] Unit tests (vitest) for parser, normalizer, mapper, validator (with mocked LLM)
 - [ ] `--update <bd-id>` to update existing beads instead of creating new ones
 - [ ] `--epic <bd-id>` so every created task becomes a child of a given epic
+- [ ] `export --query "<bd query>"` to filter by custom bd-query expressions
+- [ ] `export --format md|json` so the user can request only one of the two artifacts

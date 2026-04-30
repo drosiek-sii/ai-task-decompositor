@@ -5,13 +5,15 @@ import { persistGraph } from "./beads/persistGraph.js";
 import { LlmBrainstormValidator } from "./brainstorm/BrainstormValidator.js";
 import { validateAndRefine } from "./brainstorm/validateAndRefine.js";
 import { helpText, parseArgs } from "./cli/parseArgs.js";
+import { exportToFiles } from "./export/exportToFiles.js";
+import type { ExportOptions } from "./export/types.js";
 import { readInput } from "./input/readInput.js";
 import { createLlmClient } from "./llm/createLlmClient.js";
 import { Logger } from "./logger.js";
 import { printSummary } from "./output/printSummary.js";
 import { parseMarkdown } from "./parser/parseMarkdown.js";
 import { draftTasks } from "./tasks/draftTasks.js";
-import type { CreatedBead, RunSummary, ValidatedTask } from "./types.js";
+import type { CliOptions, CreatedBead, RunSummary, ValidatedTask } from "./types.js";
 
 async function main(argv: string[]): Promise<number> {
   let parsed;
@@ -31,7 +33,29 @@ async function main(argv: string[]): Promise<number> {
     return 0;
   }
 
-  const opts = parsed.options;
+  if (parsed.command === "export") {
+    return runExport(parsed.options);
+  }
+  return runDraft(parsed.options);
+}
+
+async function runExport(opts: ExportOptions): Promise<number> {
+  const log = new Logger(opts.verbose);
+  try {
+    const result = await exportToFiles(opts, log);
+    process.stdout.write(
+      `\nExported ${result.count} issue(s) at ${result.generatedAt}\n` +
+        `  JSON: ${result.jsonPath}\n` +
+        `  MD:   ${result.mdPath}\n`
+    );
+    return 0;
+  } catch (err) {
+    log.error(`Export failed: ${(err as Error).message}`);
+    return 1;
+  }
+}
+
+async function runDraft(opts: CliOptions): Promise<number> {
   const log = new Logger(opts.verbose);
 
   // Step 1: read input

@@ -1,19 +1,19 @@
 import { DEFAULT_OPTIONS } from "../config.js";
+import type { ExportOptions } from "../export/types.js";
 import type { CliOptions } from "../types.js";
 
-export interface ParsedArgs {
-  options: CliOptions;
-  showHelp: boolean;
-  showVersion: boolean;
-}
+export type ParsedArgs =
+  | { command: "draft"; options: CliOptions; showHelp: boolean; showVersion: boolean }
+  | { command: "export"; options: ExportOptions; showHelp: boolean; showVersion: boolean };
 
 const HELP = `agent-beads — turn prompts and .md plans into validated JIRA-style tasks in Beads.
 
 Usage:
   agent-beads "<prompt>"                Create tasks from an inline prompt.
   agent-beads --file <path.md>          Create tasks from a markdown plan.
+  agent-beads export [options]          Export every Beads issue to .md and .json.
 
-Options:
+Drafter options:
   --file, -f <path>          Read input from a markdown file.
   --dry-run                  Validate everything but do NOT write to Beads.
   --verbose, -v              Print validator output and refinement history.
@@ -22,6 +22,13 @@ Options:
   --type <t>                 Default bd type when not set per-task: task|feature|bug|epic|chore|decision (default: task).
   --priority <P0..P4>        Default bd priority (default: P2).
   --label <name>             Add a label to every created bead. Repeatable.
+
+Export options:
+  --output-dir <path>        Where to write the export files (default: ./beads-exports).
+  --open-only                Skip closed issues (default: include all).
+  --verbose, -v              Show resolved file paths and per-stage debug log.
+
+Common:
   --help, -h                 Show this help.
   --version                  Show version.
 
@@ -29,9 +36,22 @@ Examples:
   agent-beads "Add Google sign-in to the React Native app"
   agent-beads --file ./plan.md --verbose
   agent-beads --file ./plan.md --dry-run --validator local-llm
+  agent-beads export
+  agent-beads export --output-dir ./snapshots --open-only
 `;
 
 export function parseArgs(argv: string[]): ParsedArgs {
+  // Subcommand detection: first non-flag positional decides the dispatch.
+  // Today the only non-default subcommand is `export`; everything else is
+  // treated as the existing drafter flow.
+  const first = argv[0];
+  if (first === "export") {
+    return parseExportArgs(argv.slice(1));
+  }
+  return parseDraftArgs(argv);
+}
+
+function parseDraftArgs(argv: string[]): ParsedArgs {
   const opts: CliOptions = { ...DEFAULT_OPTIONS };
   let showHelp = false;
   let showVersion = false;
@@ -93,7 +113,49 @@ export function parseArgs(argv: string[]): ParsedArgs {
     opts.prompt = positional[0]!;
   }
 
-  return { options: opts, showHelp, showVersion };
+  return { command: "draft", options: opts, showHelp, showVersion };
+}
+
+function parseExportArgs(argv: string[]): ParsedArgs {
+  const opts: ExportOptions = {
+    outputDir: "./beads-exports",
+    openOnly: false,
+    verbose: false,
+  };
+  let showHelp = false;
+  let showVersion = false;
+
+  for (let i = 0; i < argv.length; i++) {
+    const a = argv[i]!;
+    switch (a) {
+      case "--help":
+      case "-h":
+        showHelp = true;
+        break;
+      case "--version":
+        showVersion = true;
+        break;
+      case "--output-dir":
+        opts.outputDir = required(argv, ++i, a);
+        break;
+      case "--open-only":
+        opts.openOnly = true;
+        break;
+      case "--verbose":
+      case "-v":
+        opts.verbose = true;
+        break;
+      default:
+        if (a.startsWith("--")) {
+          throw new Error(`Unknown flag for 'export': ${a}\nTry --help for usage.`);
+        }
+        throw new Error(
+          `Unexpected positional argument for 'export': ${a}\nTry --help for usage.`
+        );
+    }
+  }
+
+  return { command: "export", options: opts, showHelp, showVersion };
 }
 
 export function helpText(): string {
