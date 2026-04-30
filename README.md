@@ -1,31 +1,31 @@
 # agent-beads
 
-Lokalne CLI w TypeScript, które zamienia wysokopoziomowy prompt lub plan w pliku `.md` na **małe, atomowe taski w stylu JIRA**, waliduje każdy z nich przez skill **codex-brainstorm**, a dopiero przewalidowane zapisuje w **Beads** (`bd` CLI).
+Local TypeScript CLI that turns a high-level prompt or a `.md` plan into **small, atomic JIRA-style tasks**, validates each one through the **codex-brainstorm** skill, and only then writes the survivors to **Beads** (`bd` CLI).
 
-Cel: nie pisać już ticketów ręcznie — jeden plan na wejściu, lista gotowych ticketów na wyjściu, każdy z tytułem, opisem, kryteriami akceptacji i zależnościami.
+The point: stop hand-writing tickets. One plan in, a list of dev-ready tickets out — each with a title, description, acceptance criteria, and dependencies.
 
-## Co konkretnie robi
+## What it actually does
 
-1. **Czyta wejście** — albo prompt podany w argumentach, albo ścieżkę do `.md` (`--file`).
-2. **Parsuje markdown** — wykrywa sekcje, listy i istniejące "task-like" bloki (jeśli plan zawiera już sekcje typu `### Task: ...`, są wykrywane i refinowane zamiast pisane od zera).
-3. **Generuje drafty tasków** — LLM rozbija opis na małe, atomowe taski w schemacie JIRA: `title`, `description`, `acceptance_criteria`, `dependencies` (+ `type`, `priority`, `labels`).
-4. **Waliduje każdy task przez codex-brainstorm** — sprawdza siedem rzeczy: jasność, wykonalność, rozmiar, jakość AC, zależności, konkretność, atomowość. Failed taski są przepisywane wg sugestii walidatora i ponownie sprawdzane (do `--max-refinements`).
-5. **Zapisuje tylko przewalidowane taski w Beads** — przez `bd create` z `--acceptance`, `--type`, `--priority`, `--labels`. Zależności są wpinane w drugiej fazie przez `bd dep add`.
-6. **Drukuje podsumowanie** — co weszło, co przeszło, co padło, jak wyglądają zależności, jakie założenia przyjął drafter.
+1. **Reads the input** — either a prompt passed as an argument, or the path to a markdown file (`--file`).
+2. **Parses the markdown** — picks up sections, lists, and existing "task-like" blocks (if the plan already contains `### Task: ...` sections, they get refined and standardized rather than rewritten from scratch).
+3. **Drafts the tasks** — an LLM splits the input into small, atomic JIRA-style tasks: `title`, `description`, `acceptance_criteria`, `dependencies` (plus `type`, `priority`, `labels`).
+4. **Validates every task through codex-brainstorm** — checks seven things: clarity, feasibility, size, AC quality, dependencies, specificity, atomicity. Failed tasks are rewritten according to the validator's suggestion and re-checked, up to `--max-refinements`.
+5. **Writes only validated tasks to Beads** — through `bd create` with `--acceptance`, `--type`, `--priority`, `--labels`. Dependencies are wired in a second pass via `bd dep add`.
+6. **Prints a summary** — what came in, what passed, what failed, what the dependency graph looks like, what assumptions the drafter made.
 
-**Najważniejsza zasada:** task nie trafia do Beads bez pozytywnej walidacji. `--dry-run` waliduje wszystko, ale nie pisze nic.
+**Hard rule:** a task does not reach Beads without a positive validation pass. `--dry-run` validates everything but writes nothing.
 
-## Wymagania
+## Requirements
 
 - **Node ≥ 20**
-- **`bd` CLI** (Beads): `brew install beads` (testowane na 1.0.3)
-- **`claude` CLI** (opcjonalnie, ale zalecane) — żeby walidator faktycznie używał skilla codex-brainstorm:
+- **`bd` CLI** (Beads): `brew install beads` (tested on 1.0.3)
+- **`claude` CLI** (optional but recommended) — so the validator actually uses the codex-brainstorm skill:
   ```bash
   npm install -g @anthropic-ai/claude-code
   ```
-- **`ANTHROPIC_API_KEY`** w env — wymagane tylko jeśli `claude` CLI nie jest dostępny (tryb fallback przez SDK)
+- **`ANTHROPIC_API_KEY`** in env — required only when the `claude` CLI is unavailable (SDK fallback mode)
 
-## Instalacja
+## Installation
 
 ```bash
 git clone <repo>
@@ -33,88 +33,88 @@ cd ai-beads-task-agent
 npm install
 npm run build
 
-# zainstaluj skill codex-brainstorm (raz, zostaje w ./.claude/skills/)
+# install the codex-brainstorm skill (one time, lands in ./.claude/skills/)
 npx @smithery/cli@latest skill add sd0xdev/codex-brainstorm --agent claude-code
 ```
 
-Po `npm run build` masz `dist/cli.js`. Dla wygody:
+After `npm run build` you have `dist/cli.js`. For convenience:
 
 ```bash
-npm link            # rejestruje binarkę `agent-beads` globalnie
-# albo alias:
+npm link            # registers the `agent-beads` binary globally
+# or just alias:
 alias agent-beads="node $(pwd)/dist/cli.js"
 ```
 
-## Użycie
+## Usage
 
 ```bash
-# 1. zainicjalizuj bazę Beads w katalogu projektu, do którego dodajesz taski
+# 1. initialize a Beads database in the project where you want the tasks
 bd init
 
-# 2. odpal agenta na prompcie
-agent-beads "Dodaj logowanie przez Google do aplikacji React Native"
+# 2. run the agent on a prompt
+agent-beads "Add Google sign-in to the React Native app"
 
-# albo z planu w pliku
+# or on a markdown plan
 agent-beads --file ./plan.md
 
-# dry-run: zobacz drafty + walidację, ale nic nie zapisuj
+# dry-run: see drafts + validation, but do NOT persist
 agent-beads --file ./plan.md --dry-run
 
-# verbose: dodatkowo pokazuje pełne wyjście walidatora i kolejne iteracje
+# verbose: show validator output and refinement iterations
 agent-beads --file ./plan.md --verbose
 ```
 
-### Wszystkie flagi
+### All flags
 
-| Flaga | Opis |
+| Flag | Meaning |
 |---|---|
-| `--file, -f <path>` | Wczytaj plan z pliku `.md` |
-| `--dry-run` | Waliduj wszystko, ale nie zapisuj do Beads |
-| `--verbose, -v` | Drukuje wynik walidacji i historię iteracji |
+| `--file, -f <path>` | Read the plan from a markdown file |
+| `--dry-run` | Validate everything, do NOT write to Beads |
+| `--verbose, -v` | Print validator output and iteration history |
 | `--validator <name>` | `claude-cli` \| `local-llm` \| `auto` (default: `auto`) |
-| `--max-refinements <n>` | Budżet iteracji walidatora na task (default: 2) |
-| `--type <t>` | Domyślny typ bd: `task`/`feature`/`bug`/`epic`/`chore`/`decision` (default: `task`) |
-| `--priority <P0..P4>` | Domyślny priorytet bd (default: `P2`) |
-| `--label <name>` | Label dodawany do każdego taska. Można powtórzyć. |
-| `--help, -h` | Pomoc |
-| `--version` | Wersja |
+| `--max-refinements <n>` | Validator refinement budget per task (default: 2) |
+| `--type <t>` | Default bd type when not set per-task: `task`/`feature`/`bug`/`epic`/`chore`/`decision` (default: `task`) |
+| `--priority <P0..P4>` | Default bd priority (default: `P2`) |
+| `--label <name>` | Label applied to every created bead. Repeatable. |
+| `--help, -h` | Help |
+| `--version` | Version |
 
-### Zmienne środowiskowe
+### Environment variables
 
-| Zmienna | Co |
+| Variable | What |
 |---|---|
-| `ANTHROPIC_API_KEY` | Wymagane dla fallbacka (gdy `claude` CLI nie jest dostępny) |
-| `AGENT_BEADS_MODEL` | Model dla SDK fallbacka (default: `claude-sonnet-4-6`) |
-| `AGENT_BEADS_CLAUDE_BIN` | Override ścieżki do `claude` CLI |
-| `AGENT_BEADS_BD_BIN` | Override ścieżki do `bd` CLI |
+| `ANTHROPIC_API_KEY` | Required for the fallback (when the `claude` CLI is unavailable) |
+| `AGENT_BEADS_MODEL` | Model used by the SDK fallback (default: `claude-sonnet-4-6`) |
+| `AGENT_BEADS_CLAUDE_BIN` | Override the path to the `claude` CLI |
+| `AGENT_BEADS_BD_BIN` | Override the path to the `bd` CLI |
 
-## Jak działa walidacja (i kiedy "fallback")
+## How validation works (and what "fallback" means)
 
-Walidator codex-brainstorm jest skillem Claude Code, więc do "natywnego" wywołania potrzebny jest `claude` CLI. Architektura ma dwie ścieżki:
+The codex-brainstorm validator is a Claude Code skill, so a "native" invocation needs the `claude` CLI. The architecture has two paths:
 
-- **Primary: `claude -p` z odwołaniem do skilla `codex-brainstorm`.**
-  Skill jest zainstalowany lokalnie w `./.claude/skills/codex-brainstorm/` — Claude CLI uruchamiany z cwd projektu sam go znajdzie i użyje. Walidator wykorzystuje wtedy adversarial Claude+Codex debate (właściwa metodyka skilla).
+- **Primary: `claude -p` referencing the `codex-brainstorm` skill.**
+  The skill is installed locally at `./.claude/skills/codex-brainstorm/` — when Claude CLI runs from the project's cwd it discovers and uses it. The validator then leverages the adversarial Claude+Codex debate (the skill's actual methodology).
 
-- **Fallback: bezpośrednie API Anthropic.**
-  Jeśli `claude` CLI nie jest na PATH, CLI drukuje **głośny warning** i przechodzi na SDK z promptem walidującym, który zawiera ten sam zestaw checków co skill (clarity / feasibility / size / acceptance criteria / dependencies / specificity / atomicity). To nie jest pełne wywołanie skilla — to równoważnik bez adversarial debate.
+- **Fallback: direct Anthropic SDK call.**
+  If the `claude` CLI is not on PATH, the CLI prints a **loud warning** and switches to the SDK with a validation prompt that contains the same set of checks as the skill (clarity / feasibility / size / acceptance criteria / dependencies / specificity / atomicity). It is *not* a full skill execution — it is the equivalent without the adversarial debate.
 
-Wybór następuje automatycznie. Wymuszenie konkretnej ścieżki: `--validator=claude-cli` lub `--validator=local-llm`.
+The choice is automatic. Force a specific path with `--validator=claude-cli` or `--validator=local-llm`.
 
-## Mapowanie JIRA → Beads
+## JIRA → Beads mapping
 
-| JIRA-style pole | bd flag |
+| JIRA-style field | bd flag |
 |---|---|
 | `title` | `bd create [title]` |
 | `description` | `--body-file <tmp>` (newline-safe) |
-| `acceptance_criteria[]` | `--acceptance` (renderowane jako bullet list) |
+| `acceptance_criteria[]` | `--acceptance` (rendered as a bullet list) |
 | `type` | `--type` (`task`/`feature`/`bug`/`epic`/`chore`/`decision`) |
 | `priority` | `--priority` (`P0`–`P4`) |
 | `labels[]` | `--labels a,b,c` |
-| `dependencies[]` | druga faza: `bd dep add <id> <dep-id>` (typ: `blocks`) |
+| `dependencies[]` | second pass: `bd dep add <id> <dep-id>` (type: `blocks`) |
 
-Persystencja jest dwufazowa — najpierw wszystkie taski, potem zależności. Jest to odporne na cykle i forward refs w drafcie.
+Persistence is two-phase — every task is created first, then dependencies are wired. This is robust against cycles and forward references in the draft graph.
 
-## Struktura projektu
+## Project layout
 
 ```
 src/
@@ -124,74 +124,74 @@ src/
 ├── logger.ts                       # info/warn/error/debug
 ├── types.ts                        # TaskDraft, ValidationResult, RunSummary
 ├── input/readInput.ts              # prompt vs --file routing
-├── parser/parseMarkdown.ts         # sekcje, bullets, "task hints"
+├── parser/parseMarkdown.ts         # sections, bullets, "task hints"
 ├── tasks/
-│   ├── draftTasks.ts               # prompt drafter + JSON shape
+│   ├── draftTasks.ts               # drafter prompt + JSON shape
 │   └── normalizeTask.ts            # strict coercion → TaskDraft
 ├── llm/
-│   ├── LlmClient.ts                # interfejs backendu LLM
+│   ├── LlmClient.ts                # LLM backend interface
 │   ├── ClaudeCliLlm.ts             # `claude -p` (primary)
 │   ├── AnthropicSdkLlm.ts          # SDK + prompt caching (fallback)
-│   └── createLlmClient.ts          # auto-detect z warningiem
+│   └── createLlmClient.ts          # auto-detect with a warning
 ├── brainstorm/
 │   ├── prompts.ts                  # system + refinement template
-│   ├── BrainstormValidator.ts      # parsuje validator JSON
-│   └── validateAndRefine.ts        # pętla validate → suggest → revalidate
+│   ├── BrainstormValidator.ts      # parses validator JSON
+│   └── validateAndRefine.ts        # loop: validate → suggest → revalidate
 ├── beads/
-│   ├── BeadsClient.ts              # interfejs (bd-cli | beads-mcp)
-│   ├── BdCliClient.ts              # bd create/dep przez child_process
-│   ├── BeadsMcpClient.ts           # stub pod przyszłe MCP
-│   ├── mapTaskToBd.ts              # JIRA → bd flagi
-│   └── persistGraph.ts             # 2-fazowo: stwórz, potem wire deps
-├── output/printSummary.ts          # raport końcowy
-└── utils/extractJson.ts            # tolerancyjny JSON extractor
+│   ├── BeadsClient.ts              # interface (bd-cli | beads-mcp)
+│   ├── BdCliClient.ts              # bd create/dep via child_process
+│   ├── BeadsMcpClient.ts           # stub for the future MCP transport
+│   ├── mapTaskToBd.ts              # JIRA → bd flags
+│   └── persistGraph.ts             # 2-phase: create then wire deps
+├── output/printSummary.ts          # final report
+└── utils/extractJson.ts            # tolerant JSON extractor
 
-.claude/skills/codex-brainstorm/    # skill (instalowany przez smithery)
+.claude/skills/codex-brainstorm/    # the skill (installed via smithery)
 examples/plan-example.md
-scripts/smoke-parser.ts             # offline test parser → normalize → payload
+scripts/smoke-parser.ts             # offline test: parser → normalize → payload
 ```
 
-## Pod przyszłe Beads MCP
+## Ready for the future Beads MCP
 
-Cały transport do Beads stoi za interfejsem `BeadsClient` ([src/beads/BeadsClient.ts](src/beads/BeadsClient.ts)). Dziś jedyna realna implementacja to `BdCliClient`. Kiedy pojawi się Beads MCP:
+The whole Beads transport sits behind the `BeadsClient` interface ([src/beads/BeadsClient.ts](src/beads/BeadsClient.ts)). Today the only real implementation is `BdCliClient`. When a Beads MCP becomes available:
 
-1. Wypełnij `BeadsMcpClient` (dziś rzuca `not implemented`).
-2. Dodaj wybór backendu w [src/cli.ts](src/cli.ts) (np. flaga `--beads=mcp`).
-3. Reszta kodu (drafter, walidator, persistGraph, summary) nie wymaga zmian.
+1. Fill in `BeadsMcpClient` (currently throws `not implemented`).
+2. Add a backend selector in [src/cli.ts](src/cli.ts) (e.g. a `--beads=mcp` flag).
+3. The rest of the code (drafter, validator, persistGraph, summary) does not need to change.
 
-## Tryby
+## Modes
 
-- **Normal** — drafty → walidacja → zapis przewalidowanych w Beads.
-- **`--dry-run`** — drafty + walidacja, **żadnego** zapisu. Pre-flight `bd init` jest pominięty (więc działa nawet bez `.beads/`).
-- **`--verbose`** — drukuje pełne JSON-y walidatora dla każdej iteracji każdego taska. Bardzo gadatliwe — przyda się gdy chcesz zobaczyć dlaczego task nie przeszedł.
+- **Normal** — drafts → validation → write validated tasks to Beads.
+- **`--dry-run`** — drafts + validation, **no** writes. The `bd init` pre-flight is skipped (so it works even without a `.beads/` database).
+- **`--verbose`** — prints the validator's full JSON for every iteration of every task. Very chatty — useful when you want to see why a task did not pass.
 
 ## Exit codes
 
-| Code | Znaczenie |
+| Code | Meaning |
 |---|---|
-| `0` | Wszystko OK, wszystkie taski przeszły walidację |
-| `1` | Błąd środowiska (brak `bd init`, brak `ANTHROPIC_API_KEY` przy fallbacku, błąd persystencji, etc.) |
-| `2` | Błąd argumentów CLI |
-| `3` | Niektóre taski nie przeszły walidacji (przewalidowane są zapisane, niezwalidowane — pominięte) |
+| `0` | Everything OK, every task passed validation |
+| `1` | Environment error (no `bd init`, missing `ANTHROPIC_API_KEY` for fallback, persistence failure, etc.) |
+| `2` | CLI argument error |
+| `3` | Some tasks did not pass validation (validated tasks are saved, the rest are skipped) |
 
-## Znane ograniczenia
+## Known limitations
 
-- **Brak Beads MCP** — `bd` CLI to dziś jedyne realne wyjście do Beads. Architektura jest gotowa pod swap, ale klient MCP musi powstać kiedy serwer się pojawi.
-- **Skill action z fallbacka** — gdy `claude` CLI nie jest dostępny, używamy SDK z naszym promptem zamiast prawdziwego skilla. Działa, ale to nie to samo co adversarial debate.
-- **Limit pliku 1 MB** — dla `.md` na wejściu. Większe plany podziel ręcznie.
-- **Brak testów jednostkowych** — jest tylko `scripts/smoke-parser.ts` jako sanity check parsera/normalizera/payloadu offline.
+- **No Beads MCP** — the `bd` CLI is currently the only real path to Beads. The architecture is ready for a swap, but the MCP client has to be written when the server appears.
+- **Skill action from the fallback** — when the `claude` CLI is not available we use the SDK with our own prompt instead of the real skill. It works, but it is not the same as the adversarial debate.
+- **1 MB file limit** — for `.md` input. Split larger plans manually.
+- **No unit tests** — only `scripts/smoke-parser.ts` as an offline sanity check for the parser, normalizer, and payload mapping.
 
-## Smoke test (offline, bez LLM/Beads)
+## Smoke test (offline, no LLM/Beads)
 
 ```bash
 npx tsx scripts/smoke-parser.ts
 ```
 
-Sprawdza, że parser markdown wykrywa sekcje i task hints, normalizer rzuca na pustym title/AC, a `mapTaskToBdPayload` produkuje poprawne argumenty `bd create`.
+Verifies that the markdown parser detects sections and task hints, the normalizer rejects empty titles/AC, and `mapTaskToBdPayload` produces the right `bd create` arguments.
 
-## Roadmap (gdyby ktoś pytał)
+## Roadmap (in case anyone asks)
 
-- [ ] Klient Beads MCP (jak będzie serwer)
-- [ ] Testy jednostkowe (vitest) dla parsera, normalizera, mappera, walidatora (z mocked LLM)
-- [ ] `--update <bd-id>` żeby aktualizować istniejące beady zamiast tworzyć nowe
-- [ ] `--epic <bd-id>` żeby wszystkie utworzone taski lądowały jako children danego epica
+- [ ] Beads MCP client (once a server exists)
+- [ ] Unit tests (vitest) for parser, normalizer, mapper, validator (with mocked LLM)
+- [ ] `--update <bd-id>` to update existing beads instead of creating new ones
+- [ ] `--epic <bd-id>` so every created task becomes a child of a given epic
