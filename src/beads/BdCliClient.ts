@@ -26,7 +26,13 @@ export class BdCliClient implements BeadsClient {
       stdio: ["ignore", "pipe", "pipe"],
     });
     if (r.status === 0) return;
-    const stderr = r.stderr.toString("utf8");
+    if (r.error) {
+      throw new Error(
+        `'${this.bin}' command not found. Make sure Beads CLI is installed and on your PATH, ` +
+        `or use --dry-run to skip Beads.\nSystem error: ${r.error.message}`
+      );
+    }
+    const stderr = (r.stderr ?? Buffer.from("")).toString("utf8");
     if (/no beads database found/i.test(stderr)) {
       throw new Error(
         "Beads database not found in this directory. Run `bd init` (or set BEADS_DIR) before using agent-beads."

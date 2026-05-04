@@ -30,7 +30,15 @@
       "Bash(npx tsx *)",
       "Bash(env)",
       "Bash(~/.local/bin/claude --version)",
-      "Bash(~/.local/bin/claude --help)"
+      "Bash(~/.local/bin/claude --help)",
+      "WebSearch",
+      "Bash(node *)",
+      "Bash(bd stats *)",
+      "Bash(bd ready *)",
+      "Bash(bd dolt *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)"
     ]
   }
 }

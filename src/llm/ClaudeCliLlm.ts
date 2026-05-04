@@ -27,9 +27,14 @@ export class ClaudeCliLlm implements LlmClient {
       req.system,
     ];
 
-    const userMessage = req.skill
-      ? `[Use the ${req.skill} skill for this task.]\n\n${req.user}`
-      : req.user;
+    const jsonSuffix = req.jsonOnly
+      ? "\n\nCRITICAL: respond with ONLY a single valid JSON object — no prose, no markdown fences, no text before or after the JSON."
+      : "";
+
+    const userMessage =
+      (req.skill ? `[Use the ${req.skill} skill for this task.]\n\n` : "") +
+      req.user +
+      jsonSuffix;
 
     return new Promise<LlmResponse>((resolve, reject) => {
       const child = spawn(this.bin, args, {
