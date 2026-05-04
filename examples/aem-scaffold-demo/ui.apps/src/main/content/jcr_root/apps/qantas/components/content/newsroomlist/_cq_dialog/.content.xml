@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Beads task: 2ow — Newsroom List dialog.
+  Inherits from Core List v4 dialog; only adds a "max items" override field.
+  The query/sort fields come from the parent dialog automatically via
+  sling:resourceSuperType inheritance.
+-->
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+          xmlns:cq="http://www.day.com/jcr/cq/1.0"
+          xmlns:jcr="http://www.jcp.org/jcr/1.0"
+          xmlns:granite="http://www.adobe.com/jcr/granite/1.0"
+          xmlns:nt="http://www.jcp.org/nt/1.0"
+          jcr:primaryType="nt:unstructured"
+          jcr:title="Newsroom Related Posts"
+          sling:resourceType="cq/gui/components/authoring/dialog"
+          sling:resourceSuperType="core/wcm/components/list/v4/list/cq:dialog"/>

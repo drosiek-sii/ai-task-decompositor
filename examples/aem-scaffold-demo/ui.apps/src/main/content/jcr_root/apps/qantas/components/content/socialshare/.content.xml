@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Beads task: jwf — Social Share sub-component.
+  Decision #11: anchor-based share links, NO Facebook SDK iframe.
+  Decision #9: Print = native window.print() bound from clientlib (task bud).
+-->
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+          xmlns:cq="http://www.day.com/jcr/cq/1.0"
+          xmlns:jcr="http://www.jcp.org/jcr/1.0"
+          jcr:primaryType="cq:Component"
+          jcr:title="Social Share"
+          jcr:description="Facebook + Twitter/X anchor share links + native Print button."
+          componentGroup="Qantas - Newsroom"/>

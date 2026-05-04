@@ -1,0 +1,91 @@
+// Beads task: bud — Newsroom press-release base styles (Stage 2 only).
+// Stage 3 (visual polish) lives in a separate ticket.
+
+$breakpoint-tablet: 768px;
+$brand-red: #e40000;
+$body-text: #2a2a2a;
+
+.press-release-page {
+    color: $body-text;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.55;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+.article-meta {
+    color: lighten($body-text, 25%);
+    font-size: 0.95rem;
+    margin: 0.25rem 0 1rem;
+}
+
+.financial-data-table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1.5rem 0;
+
+    th, td {
+        padding: 0.5rem 0.75rem;
+        text-align: right;
+        border-bottom: 1px solid #ddd;
+    }
+
+    th[scope="row"], td:first-child {
+        text-align: left;
+        font-weight: 600;
+    }
+
+    .is-positive { color: #1a7f37; }
+    .is-negative { color: $brand-red; }
+
+    &.is-striped tbody tr:nth-child(even) {
+        background: #f7f7f7;
+    }
+}
+
+.footnotes {
+    margin-top: 2.5rem;
+    border-top: 1px solid #ddd;
+    padding-top: 1rem;
+    font-size: 0.9rem;
+
+    &__list { list-style: decimal; padding-left: 1.5rem; }
+    &__back { margin-left: 0.4rem; text-decoration: none; }
+}
+
+.social-share {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    margin: 1rem 0;
+
+    &__link, &__button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: #eee;
+        color: $body-text;
+        border: none;
+        cursor: pointer;
+
+        &:focus-visible { outline: 2px solid $brand-red; outline-offset: 2px; }
+    }
+
+    &__icon { width: 16px; height: 16px; }
+}
+
+.newsroom-list {
+    list-style: none;
+    padding: 0;
+
+    &__item { padding: 0.5rem 0; border-bottom: 1px solid #eee; }
+    &__city { font-weight: 600; }
+}
+
+@media (min-width: $breakpoint-tablet) {
+    .press-release-page main { display: grid; grid-template-columns: 220px 1fr; gap: 2rem; }
+}

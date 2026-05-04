@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Beads task: hwy — seed press-release page for the April 2026 market update.
+  Authored from the press-release-page template (task ax5).
+
+  Page properties:
+    - jcr:title:    headline as in source HTML
+    - releaseDate:  ISO datetime per source 'Published on …' line
+    - releaseCity:  optional dateline city (Sydney for this release)
+    - intro:        rich-text lead paragraph (single source of truth — also rendered as <meta name='intro'>)
+
+  Body composition (Layout Container, allowed components per task 6x2 policy):
+    - Auto-rendered intro paragraph (Decision #12, prefixed by template)
+    - 3 sub-sections, each: Core Title (h2) + Core Text body with [n] anchors
+    - 1 Financial Data Table for Q3 capacity outlook
+    - 1 Footnotes block with 4 entries (matching the [1]…[4] anchors in body)
+-->
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+          xmlns:cq="http://www.day.com/jcr/cq/1.0"
+          xmlns:jcr="http://www.jcp.org/jcr/1.0"
+          xmlns:nt="http://www.jcp.org/nt/1.0"
+          jcr:primaryType="cq:Page">
+
+    <jcr:content
+        jcr:primaryType="cq:PageContent"
+        jcr:title="Qantas Group market update – April 2026"
+        sling:resourceType="qantas/components/page/press-release-page"
+        cq:template="/conf/qantas/settings/wcm/templates/press-release-page"
+        releaseDate="{Date}2026-04-14T09:03:00.000+10:00"
+        releaseCity="Sydney"
+        intro="&lt;p&gt;The Qantas Group has today provided an update on its operating performance for the third quarter, including a stronger-than-expected revenue contribution from international travel and continued moderation of fuel cost pressures.&lt;/p&gt;">
+
+        <root jcr:primaryType="nt:unstructured"
+              sling:resourceType="qantas/components/structure/page">
+
+            <article_body jcr:primaryType="nt:unstructured"
+                          sling:resourceType="wcm/foundation/components/responsivegrid">
+
+                <fuel_outlook_heading
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="core/wcm/components/title/v3/title"
+                    jcr:title="Fuel outlook"
+                    type="h2"/>
+
+                <fuel_outlook_text
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="core/wcm/components/text/v2/text"
+                    text="&lt;p&gt;Group fuel costs in 2H26 are now expected to be approximately A$2.45 billion[1], around A$50 million below the previous estimate, reflecting a softer A$/USD jet fuel curve.&lt;/p&gt;"/>
+
+                <capacity_heading
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="core/wcm/components/title/v3/title"
+                    jcr:title="Customers, capacity and fares"
+                    type="h2"/>
+
+                <capacity_text
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="core/wcm/components/text/v2/text"
+                    text="&lt;p&gt;Group International capacity[2] is now expected to be ~99 per cent of pre-COVID in 2H26, with continued recovery to FY27. Group Domestic capacity is expected to be flat versus prior year[3].&lt;/p&gt;"/>
+
+                <capacity_table
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="qantas/components/content/financialdatatable"
+                    caption="Group ASK capacity (% of FY19), April 2026 outlook"
+                    firstRowAsHeader="{Boolean}true"
+                    striped="{Boolean}true">
+                    <rows jcr:primaryType="nt:unstructured">
+                        <row0 jcr:primaryType="nt:unstructured" label="">
+                            <cells jcr:primaryType="nt:unstructured">
+                                <c0 jcr:primaryType="nt:unstructured" value="3Q26"/>
+                                <c1 jcr:primaryType="nt:unstructured" value="4Q26"/>
+                                <c2 jcr:primaryType="nt:unstructured" value="2H26"/>
+                                <c3 jcr:primaryType="nt:unstructured" value="FY26"/>
+                            </cells>
+                        </row0>
+                        <row1 jcr:primaryType="nt:unstructured" label="Group Domestic">
+                            <cells jcr:primaryType="nt:unstructured">
+                                <c0 jcr:primaryType="nt:unstructured" value="100%"/>
+                                <c1 jcr:primaryType="nt:unstructured" value="100%"/>
+                                <c2 jcr:primaryType="nt:unstructured" value="100%"/>
+                                <c3 jcr:primaryType="nt:unstructured" value="100%"/>
+                            </cells>
+                        </row1>
+                        <row2 jcr:primaryType="nt:unstructured" label="Qantas Domestic">
+                            <cells jcr:primaryType="nt:unstructured">
+                                <c0 jcr:primaryType="nt:unstructured" value="103%"/>
+                                <c1 jcr:primaryType="nt:unstructured" value="104%"/>
+                                <c2 jcr:primaryType="nt:unstructured" value="103%" classFlag="is-positive"/>
+                                <c3 jcr:primaryType="nt:unstructured" value="102%"/>
+                            </cells>
+                        </row2>
+                        <row3 jcr:primaryType="nt:unstructured" label="Jetstar Domestic">
+                            <cells jcr:primaryType="nt:unstructured">
+                                <c0 jcr:primaryType="nt:unstructured" value="95%"/>
+                                <c1 jcr:primaryType="nt:unstructured" value="93%"/>
+                                <c2 jcr:primaryType="nt:unstructured" value="94%" classFlag="is-negative"/>
+                                <c3 jcr:primaryType="nt:unstructured" value="96%"/>
+                            </cells>
+                        </row3>
+                        <row4 jcr:primaryType="nt:unstructured" label="Group International">
+                            <cells jcr:primaryType="nt:unstructured">
+                                <c0 jcr:primaryType="nt:unstructured" value="99%" footnoteAnchor="_ftn4"/>
+                                <c1 jcr:primaryType="nt:unstructured" value="100%"/>
+                                <c2 jcr:primaryType="nt:unstructured" value="99%"/>
+                                <c3 jcr:primaryType="nt:unstructured" value="97%"/>
+                            </cells>
+                        </row4>
+                    </rows>
+                </capacity_table>
+
+                <financial_heading
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="core/wcm/components/title/v3/title"
+                    jcr:title="Financial Framework"
+                    type="h2"/>
+
+                <financial_text
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="core/wcm/components/text/v2/text"
+                    text="&lt;p&gt;The Group remains within its Financial Framework targets, with net debt expected to be at the lower half of the target range at FY26.&lt;/p&gt;"/>
+
+                <footnotes
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="qantas/components/content/footnotes">
+                    <entries jcr:primaryType="nt:unstructured">
+                        <e1 jcr:primaryType="nt:unstructured" text="Excludes carbon and overheads."/>
+                        <e2 jcr:primaryType="nt:unstructured" text="Available Seat Kilometres (ASKs)."/>
+                        <e3 jcr:primaryType="nt:unstructured" text="Excluding Jetstar Asia."/>
+                        <e4 jcr:primaryType="nt:unstructured" text="Reflects published schedule as at 14 April 2026."/>
+                    </entries>
+                </footnotes>
+            </article_body>
+        </root>
+    </jcr:content>
+</jcr:root>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Beads task: 2ow — Newsroom List component.
+  Thin proxy over Core List v4 that exposes optional `releaseCity` per item
+  (Decision #2 in the migration plan).
+-->
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+          xmlns:cq="http://www.day.com/jcr/cq/1.0"
+          xmlns:jcr="http://www.jcp.org/jcr/1.0"
+          jcr:primaryType="cq:Component"
+          jcr:title="Newsroom Related Posts"
+          jcr:description="Lists sibling Newsroom pages with release date and optional release city."
+          componentGroup="Qantas - Newsroom"
+          sling:resourceSuperType="core/wcm/components/list/v4/list"/>

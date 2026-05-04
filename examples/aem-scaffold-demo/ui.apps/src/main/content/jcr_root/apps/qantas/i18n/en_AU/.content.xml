@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Beads task: 208 — English (Australian) translations.
+  Strings reference HTL ${'…' @ i18n} usages in:
+    - socialshare.html (task jwf)
+    - newsroomlist.html (task 2ow)
+    - article-meta.html (task fq0)
+-->
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+          xmlns:jcr="http://www.jcp.org/jcr/1.0"
+          jcr:primaryType="sling:Folder">
+
+    <share_facebook
+        jcr:primaryType="sling:MessageEntry"
+        sling:key="Share on Facebook"
+        sling:message="Share on Facebook"/>
+
+    <share_twitter
+        jcr:primaryType="sling:MessageEntry"
+        sling:key="Share on Twitter"
+        sling:message="Share on Twitter / X"/>
+
+    <print_page
+        jcr:primaryType="sling:MessageEntry"
+        sling:key="Print this page"
+        sling:message="Print friendly version"/>
+
+    <published_on
+        jcr:primaryType="sling:MessageEntry"
+        sling:key="Published on"
+        sling:message="Published on"/>
+
+    <related_posts
+        jcr:primaryType="sling:MessageEntry"
+        sling:key="Related Posts"
+        sling:message="Related Newsroom Posts"/>
+</jcr:root>

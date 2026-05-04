@@ -1,0 +1,39 @@
+<!--/* Beads task: jwf — Social Share render.
+        Native anchors only — no Facebook SDK / no Twitter widgets.js. */-->
+<sly data-sly-use.share="com.qantas.core.models.SocialShare"/>
+<sly data-sly-use.i18n="${'i18n.json' @ extension='json'}"/>
+
+<div class="social-share"
+     data-sly-test="${share.anyEnabled}">
+
+    <a class="social-share__link social-share__link--facebook"
+       data-sly-test="${share.facebookEnabled}"
+       href="${share.facebookUrl @ context='uri'}"
+       target="_blank"
+       rel="noopener noreferrer"
+       aria-label="${'Share on Facebook' @ i18n}">
+        <svg class="social-share__icon" aria-hidden="true">
+            <use xlink:href="#icon-facebook"/>
+        </svg>
+    </a>
+
+    <a class="social-share__link social-share__link--twitter"
+       data-sly-test="${share.twitterEnabled}"
+       href="${share.twitterUrl @ context='uri'}"
+       target="_blank"
+       rel="noopener noreferrer"
+       aria-label="${'Share on Twitter' @ i18n}">
+        <svg class="social-share__icon" aria-hidden="true">
+            <use xlink:href="#icon-twitter"/>
+        </svg>
+    </a>
+
+    <button class="social-share__button print-friendly-version"
+            data-sly-test="${share.printEnabled}"
+            type="button"
+            aria-label="${'Print this page' @ i18n}">
+        <svg class="social-share__icon" aria-hidden="true">
+            <use xlink:href="#icon-print"/>
+        </svg>
+    </button>
+</div>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Beads task: 6yb — master variation of the Newsroom footer.
+  Composition (per source HTML / migration plan section 4):
+    - Logo + social links column
+    - Privacy / Terms column
+    - Useful Links column (Qantas group entities)
+    - Copyright line
+-->
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+          xmlns:cq="http://www.day.com/jcr/cq/1.0"
+          xmlns:jcr="http://www.jcp.org/jcr/1.0"
+          xmlns:nt="http://www.jcp.org/nt/1.0"
+          jcr:primaryType="cq:Page">
+    <jcr:content
+        jcr:primaryType="cq:PageContent"
+        jcr:title="master"
+        sling:resourceType="cq/experience-fragments/components/xfvariation"
+        cq:xfVariantType="web">
+
+        <root jcr:primaryType="nt:unstructured"
+              sling:resourceType="qantas/components/content/experiencefragment/container">
+
+            <logo_column jcr:primaryType="nt:unstructured"
+                         sling:resourceType="qantas/components/content/footer-column">
+                <logo jcr:primaryType="nt:unstructured"
+                      sling:resourceType="core/wcm/components/image/v3/image"
+                      alt="Qantas"
+                      linkURL="https://www.qantas.com"/>
+                <social jcr:primaryType="nt:unstructured"
+                        sling:resourceType="qantas/components/content/socialicons">
+                    <facebook jcr:primaryType="nt:unstructured" network="facebook" url="https://facebook.com/Qantas"/>
+                    <twitter jcr:primaryType="nt:unstructured" network="twitter" url="https://twitter.com/Qantas"/>
+                    <instagram jcr:primaryType="nt:unstructured" network="instagram" url="https://instagram.com/qantas"/>
+                    <linkedin jcr:primaryType="nt:unstructured" network="linkedin" url="https://linkedin.com/company/qantas"/>
+                    <youtube jcr:primaryType="nt:unstructured" network="youtube" url="https://youtube.com/qantas"/>
+                </social>
+            </logo_column>
+
+            <privacy_column jcr:primaryType="nt:unstructured"
+                            sling:resourceType="qantas/components/content/footer-column">
+                <heading jcr:primaryType="nt:unstructured"
+                         sling:resourceType="core/wcm/components/title/v3/title"
+                         jcr:title="Privacy &amp; Terms"
+                         type="h3"/>
+                <links jcr:primaryType="nt:unstructured"
+                       sling:resourceType="qantas/components/content/linklist">
+                    <privacy jcr:primaryType="nt:unstructured" label="Privacy" url="https://www.qantas.com/au/en/support/privacy.html"/>
+                    <terms jcr:primaryType="nt:unstructured" label="Terms of use" url="https://www.qantas.com/au/en/support/terms.html"/>
+                </links>
+            </privacy_column>
+
+            <useful_column jcr:primaryType="nt:unstructured"
+                           sling:resourceType="qantas/components/content/footer-column">
+                <heading jcr:primaryType="nt:unstructured"
+                         sling:resourceType="core/wcm/components/title/v3/title"
+                         jcr:title="Useful Links"
+                         type="h3"/>
+                <links jcr:primaryType="nt:unstructured"
+                       sling:resourceType="qantas/components/content/linklist">
+                    <jetstar jcr:primaryType="nt:unstructured" label="Jetstar" url="https://www.jetstar.com"/>
+                    <qf_freight jcr:primaryType="nt:unstructured" label="Qantas Freight" url="https://www.qantasfreight.com"/>
+                    <qf_loyalty jcr:primaryType="nt:unstructured" label="Qantas Frequent Flyer" url="https://www.qantas.com/frequentflyer"/>
+                </links>
+            </useful_column>
+
+            <copyright jcr:primaryType="nt:unstructured"
+                       sling:resourceType="core/wcm/components/text/v2/text"
+                       text="© Qantas Airways Limited ABN 16 009 661 901"/>
+        </root>
+    </jcr:content>
+</jcr:root>
