@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Beads task: r8t — Master variation of the Newsroom header.
+  Contains: brand area, primary Qantas nav, Newsroom nav-tools, Newsroom search.
+  Active state on Newsroom tabs is resolved dynamically by Core Navigation
+  from the current page path — never hardcoded.
+-->
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+          xmlns:cq="http://www.day.com/jcr/cq/1.0"
+          xmlns:jcr="http://www.jcp.org/jcr/1.0"
+          xmlns:nt="http://www.jcp.org/nt/1.0"
+          jcr:primaryType="cq:Page">
+    <jcr:content
+        jcr:primaryType="cq:PageContent"
+        jcr:title="master"
+        sling:resourceType="cq/experience-fragments/components/xfvariation"
+        cq:xfVariantType="web">
+
+        <root jcr:primaryType="nt:unstructured"
+              sling:resourceType="qantas/components/content/experiencefragment/container">
+
+            <brand jcr:primaryType="nt:unstructured"
+                   sling:resourceType="qantas/components/content/header-brand">
+                <qantas_logo jcr:primaryType="nt:unstructured"
+                             sling:resourceType="core/wcm/components/image/v3/image"
+                             alt="Qantas"
+                             linkURL="https://www.qantas.com"/>
+                <oneworld_logo jcr:primaryType="nt:unstructured"
+                               sling:resourceType="core/wcm/components/image/v3/image"
+                               alt="oneworld"
+                               linkURL="https://www.qantas.com/au/en/about-us/oneworld.html"/>
+                <site_search jcr:primaryType="nt:unstructured"
+                             sling:resourceType="core/wcm/components/search/v1/search"
+                             searchRoot="/content/qantas"/>
+            </brand>
+
+            <primary_nav jcr:primaryType="nt:unstructured"
+                         sling:resourceType="core/wcm/components/navigation/v1/navigation"
+                         navigationRoot="/content/qantas"
+                         structureDepth="{Long}2"
+                         skipNavigationRoot="{Boolean}true"
+                         id="primary-nav"
+                         accessibilityLabel="Primary"/>
+
+            <newsroom_nav jcr:primaryType="nt:unstructured"
+                          sling:resourceType="core/wcm/components/navigation/v1/navigation"
+                          navigationRoot="/content/qantas/newsroom"
+                          structureDepth="{Long}1"
+                          skipNavigationRoot="{Boolean}true"
+                          id="newsroom-nav"
+                          accessibilityLabel="Newsroom"/>
+
+            <newsroom_search jcr:primaryType="nt:unstructured"
+                             sling:resourceType="core/wcm/components/search/v1/search"
+                             searchRoot="/content/qantas/newsroom"
+                             id="newsroom-search"/>
+        </root>
+    </jcr:content>
+</jcr:root>

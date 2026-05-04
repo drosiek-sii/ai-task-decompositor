@@ -1,0 +1,15 @@
+<!--/* Beads task: cyc — page rendering entry point. Inherits from base page; only overrides what's specific. */-->
+<sly data-sly-include="/libs/wcm/foundation/components/page/redirect.html"/>
+<sly data-sly-call="${templateMain.main @ resource=resource, page=currentPage, model=pageModel}"/>
+
+<template data-sly-template.main="${@ resource, page, model}">
+    <!doctype html>
+    <html lang="${page.language}">
+        <head>
+            <sly data-sly-call="${head.head @ resource=resource, page=page, model=model}"/>
+        </head>
+        <body class="press-release-page">
+            <sly data-sly-resource="${'root' @ resourceType='qantas/components/structure/page'}"/>
+        </body>
+    </html>
+</template>

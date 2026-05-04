@@ -1,0 +1,35 @@
+<!--/* Beads task: yqk — HTL render of structured rows × cells. */-->
+<sly data-sly-use.tbl="com.qantas.core.models.FinancialDataTable"/>
+
+<table class="financial-data-table${tbl.striped ? ' is-striped' : ''}"
+       data-sly-test="${tbl.rows.size > 0}">
+
+    <caption data-sly-test="${tbl.caption}">${tbl.caption}</caption>
+
+    <thead data-sly-test="${tbl.firstRowAsHeader}">
+        <tr>
+            <th scope="row">${tbl.headerRow.label}</th>
+            <th data-sly-list.cell="${tbl.headerRow.cells}"
+                scope="col"
+                class="${cell.classFlag}">
+                <sly>${cell.value}</sly>
+                <sup data-sly-test="${cell.footnoteAnchor}">
+                    <a href="#${cell.footnoteAnchor}">[${cell.footnoteIndex}]</a>
+                </sup>
+            </th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <tr data-sly-list.row="${tbl.bodyRows}">
+            <th scope="row">${row.label}</th>
+            <td data-sly-list.cell="${row.cells}"
+                class="${cell.classFlag}">
+                <sly>${cell.value}</sly>
+                <sup data-sly-test="${cell.footnoteAnchor}">
+                    <a href="#${cell.footnoteAnchor}">[${cell.footnoteIndex}]</a>
+                </sup>
+            </td>
+        </tr>
+    </tbody>
+</table>

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Beads task: yqk — dialog with nested multifields:
+    rows[ ] of cells[ ], plus per-cell pos/neg/footnote-anchor metadata.
+-->
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+          xmlns:cq="http://www.day.com/jcr/cq/1.0"
+          xmlns:jcr="http://www.jcp.org/jcr/1.0"
+          xmlns:granite="http://www.adobe.com/jcr/granite/1.0"
+          xmlns:nt="http://www.jcp.org/nt/1.0"
+          jcr:primaryType="nt:unstructured"
+          jcr:title="Financial Data Table"
+          sling:resourceType="cq/gui/components/authoring/dialog">
+
+    <content jcr:primaryType="nt:unstructured"
+             sling:resourceType="granite/ui/components/coral/foundation/container">
+        <items jcr:primaryType="nt:unstructured">
+            <tabs jcr:primaryType="nt:unstructured"
+                  sling:resourceType="granite/ui/components/coral/foundation/tabs">
+                <items jcr:primaryType="nt:unstructured">
+
+                    <general_tab jcr:primaryType="nt:unstructured"
+                                 jcr:title="General"
+                                 sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns"
+                                 margin="{Boolean}true">
+                        <items jcr:primaryType="nt:unstructured">
+                            <column jcr:primaryType="nt:unstructured"
+                                    sling:resourceType="granite/ui/components/coral/foundation/container">
+                                <items jcr:primaryType="nt:unstructured">
+
+                                    <caption jcr:primaryType="nt:unstructured"
+                                             sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                             fieldLabel="Caption"
+                                             name="./caption"/>
+
+                                    <firstRowAsHeader jcr:primaryType="nt:unstructured"
+                                                      sling:resourceType="granite/ui/components/coral/foundation/form/checkbox"
+                                                      text="Treat first row as header (renders inside &lt;thead&gt;)"
+                                                      name="./firstRowAsHeader"
+                                                      value="{Boolean}true"
+                                                      uncheckedValue="{Boolean}false"/>
+
+                                    <striped jcr:primaryType="nt:unstructured"
+                                             sling:resourceType="granite/ui/components/coral/foundation/form/checkbox"
+                                             text="Apply striping to body rows"
+                                             name="./striped"
+                                             value="{Boolean}true"
+                                             uncheckedValue="{Boolean}false"
+                                             checked="{Boolean}true"/>
+                                </items>
+                            </column>
+                        </items>
+                    </general_tab>
+
+                    <rows_tab jcr:primaryType="nt:unstructured"
+                              jcr:title="Rows"
+                              sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns"
+                              margin="{Boolean}true">
+                        <items jcr:primaryType="nt:unstructured">
+                            <column jcr:primaryType="nt:unstructured"
+                                    sling:resourceType="granite/ui/components/coral/foundation/container">
+                                <items jcr:primaryType="nt:unstructured">
+
+                                    <rows jcr:primaryType="nt:unstructured"
+                                          sling:resourceType="granite/ui/components/coral/foundation/form/multifield"
+                                          fieldLabel="Rows"
+                                          fieldDescription="Each row contains a label cell and N value cells."
+                                          composite="{Boolean}true">
+                                        <field jcr:primaryType="nt:unstructured"
+                                               sling:resourceType="granite/ui/components/coral/foundation/container"
+                                               name="./rows">
+                                            <items jcr:primaryType="nt:unstructured">
+
+                                                <label jcr:primaryType="nt:unstructured"
+                                                       sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                                       fieldLabel="Row label"
+                                                       name="./label"/>
+
+                                                <cells jcr:primaryType="nt:unstructured"
+                                                       sling:resourceType="granite/ui/components/coral/foundation/form/multifield"
+                                                       fieldLabel="Cells"
+                                                       composite="{Boolean}true">
+                                                    <field jcr:primaryType="nt:unstructured"
+                                                           sling:resourceType="granite/ui/components/coral/foundation/container"
+                                                           name="./cells">
+                                                        <items jcr:primaryType="nt:unstructured">
+                                                            <value jcr:primaryType="nt:unstructured"
+                                                                   sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                                                   fieldLabel="Value"
+                                                                   name="./value"/>
+                                                            <classFlag jcr:primaryType="nt:unstructured"
+                                                                       sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                                                                       fieldLabel="Sign class (optional)"
+                                                                       name="./classFlag">
+                                                                <items jcr:primaryType="nt:unstructured">
+                                                                    <none jcr:primaryType="nt:unstructured" text="None" value=""/>
+                                                                    <pos jcr:primaryType="nt:unstructured" text="Positive" value="is-positive"/>
+                                                                    <neg jcr:primaryType="nt:unstructured" text="Negative" value="is-negative"/>
+                                                                </items>
+                                                            </classFlag>
+                                                            <footnoteAnchor jcr:primaryType="nt:unstructured"
+                                                                            sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                                                            fieldLabel="Footnote anchor (e.g. _ftn1)"
+                                                                            name="./footnoteAnchor"/>
+                                                        </items>
+                                                    </field>
+                                                </cells>
+                                            </items>
+                                        </field>
+                                    </rows>
+                                </items>
+                            </column>
+                        </items>
+                    </rows_tab>
+                </items>
+            </tabs>
+        </items>
+    </content>
+</jcr:root>

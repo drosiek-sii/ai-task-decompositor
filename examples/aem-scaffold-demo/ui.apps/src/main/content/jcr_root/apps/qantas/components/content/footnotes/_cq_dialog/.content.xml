@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Beads task: doz — Footnotes dialog. Repeatable multifield of rich-text entries.
+-->
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+          xmlns:cq="http://www.day.com/jcr/cq/1.0"
+          xmlns:jcr="http://www.jcp.org/jcr/1.0"
+          xmlns:granite="http://www.adobe.com/jcr/granite/1.0"
+          xmlns:nt="http://www.jcp.org/nt/1.0"
+          jcr:primaryType="nt:unstructured"
+          jcr:title="Footnotes"
+          sling:resourceType="cq/gui/components/authoring/dialog">
+
+    <content jcr:primaryType="nt:unstructured"
+             sling:resourceType="granite/ui/components/coral/foundation/container">
+        <items jcr:primaryType="nt:unstructured">
+            <tabs jcr:primaryType="nt:unstructured"
+                  sling:resourceType="granite/ui/components/coral/foundation/tabs">
+                <items jcr:primaryType="nt:unstructured">
+
+                    <entries_tab jcr:primaryType="nt:unstructured"
+                                 jcr:title="Entries"
+                                 sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns"
+                                 margin="{Boolean}true">
+                        <items jcr:primaryType="nt:unstructured">
+                            <column jcr:primaryType="nt:unstructured"
+                                    sling:resourceType="granite/ui/components/coral/foundation/container">
+                                <items jcr:primaryType="nt:unstructured">
+
+                                    <entries jcr:primaryType="nt:unstructured"
+                                             sling:resourceType="granite/ui/components/coral/foundation/form/multifield"
+                                             fieldLabel="Footnotes"
+                                             fieldDescription="Order matters — anchor IDs (_ftn1, _ftn2, …) are emitted from this order."
+                                             composite="{Boolean}true">
+                                        <field jcr:primaryType="nt:unstructured"
+                                               sling:resourceType="granite/ui/components/coral/foundation/container"
+                                               name="./entries">
+                                            <items jcr:primaryType="nt:unstructured">
+                                                <text jcr:primaryType="nt:unstructured"
+                                                      sling:resourceType="cq/gui/components/coral/common/form/richtext"
+                                                      fieldLabel="Footnote text"
+                                                      name="./text"
+                                                      useFixedInlineToolbar="{Boolean}true">
+                                                    <rtePlugins jcr:primaryType="nt:unstructured">
+                                                        <format jcr:primaryType="nt:unstructured" features="bold,italic"/>
+                                                        <links jcr:primaryType="nt:unstructured" features="modifylink,unlink"/>
+                                                        <subsuperscript jcr:primaryType="nt:unstructured" features="superscript,subscript"/>
+                                                    </rtePlugins>
+                                                </text>
+                                            </items>
+                                        </field>
+                                    </entries>
+                                </items>
+                            </column>
+                        </items>
+                    </entries_tab>
+                </items>
+            </tabs>
+        </items>
+    </content>
+</jcr:root>

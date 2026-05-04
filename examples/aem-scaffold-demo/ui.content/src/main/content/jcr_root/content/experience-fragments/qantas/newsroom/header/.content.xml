@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Beads task: r8t — Newsroom-scoped Global Header Experience Fragment.
+  XF root: declares it as an XF and points at the template that defines its
+  drop areas. Variations live as siblings of "master".
+-->
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+          xmlns:cq="http://www.day.com/jcr/cq/1.0"
+          xmlns:jcr="http://www.jcp.org/jcr/1.0"
+          jcr:primaryType="cq:Page">
+    <jcr:content
+        jcr:primaryType="cq:PageContent"
+        jcr:title="Newsroom Global Header"
+        jcr:description="Brand area + primary Qantas nav + Newsroom nav-tools + Newsroom search"
+        sling:resourceType="cq/experience-fragments/components/xfpage"
+        cq:xfMasterVariation="master"
+        cq:template="/conf/qantas/settings/wcm/templates/experience-fragment-web-variation"/>
+</jcr:root>

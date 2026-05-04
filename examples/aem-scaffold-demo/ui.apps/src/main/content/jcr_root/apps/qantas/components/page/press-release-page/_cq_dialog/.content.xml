@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Beads task: cyc — page properties dialog adding two typed properties:
+    - releaseDate (datetime)  → drives Article Meta line + OG/Twitter tags
+    - intro (rich text)       → first body paragraph + <meta name="intro">
+
+  This dialog is *layered on top of* the parent page component's dialog via
+  cq:Component inheritance. The "newsroom" tab gets merged in.
+-->
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+          xmlns:cq="http://www.day.com/jcr/cq/1.0"
+          xmlns:jcr="http://www.jcp.org/jcr/1.0"
+          xmlns:granite="http://www.adobe.com/jcr/granite/1.0"
+          xmlns:nt="http://www.jcp.org/nt/1.0"
+          jcr:primaryType="nt:unstructured"
+          jcr:title="Press Release Page Properties"
+          sling:resourceType="cq/gui/components/authoring/dialog"
+          extraClientlibs="[cq.wcm.page.contentupdate]">
+
+    <content jcr:primaryType="nt:unstructured"
+             sling:resourceType="granite/ui/components/coral/foundation/container">
+        <items jcr:primaryType="nt:unstructured">
+            <tabs jcr:primaryType="nt:unstructured"
+                  sling:resourceType="granite/ui/components/coral/foundation/tabs"
+                  maximized="{Boolean}true">
+                <items jcr:primaryType="nt:unstructured">
+
+                    <!-- Newsroom-specific tab merged into Page Properties -->
+                    <newsroom jcr:primaryType="nt:unstructured"
+                              jcr:title="Newsroom"
+                              sling:resourceType="granite/ui/components/coral/foundation/fixedcolumns"
+                              margin="{Boolean}true">
+                        <items jcr:primaryType="nt:unstructured">
+                            <column jcr:primaryType="nt:unstructured"
+                                    sling:resourceType="granite/ui/components/coral/foundation/container">
+                                <items jcr:primaryType="nt:unstructured">
+
+                                    <releaseDate jcr:primaryType="nt:unstructured"
+                                                 sling:resourceType="granite/ui/components/coral/foundation/form/datepicker"
+                                                 fieldLabel="Release date"
+                                                 fieldDescription="Press release publication date/time. Drives the 'Published on …' line and OG meta tags."
+                                                 name="./releaseDate"
+                                                 type="datetime"
+                                                 displayedFormat="DD MMMM YYYY HH:mm"
+                                                 valueFormat="YYYY-MM-DDTHH:mm:ss.SSSZ"
+                                                 required="{Boolean}true"/>
+
+                                    <releaseCity jcr:primaryType="nt:unstructured"
+                                                 sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                                 fieldLabel="Release city"
+                                                 fieldDescription="Optional. Renders before the date in the Newsroom Related Posts list."
+                                                 name="./releaseCity"/>
+
+                                    <intro jcr:primaryType="nt:unstructured"
+                                           sling:resourceType="cq/gui/components/coral/common/form/richtext"
+                                           fieldLabel="Intro"
+                                           fieldDescription="Lead paragraph. Renders as the first body paragraph AND as &lt;meta name='intro'&gt;."
+                                           name="./intro"
+                                           required="{Boolean}true"
+                                           useFixedInlineToolbar="{Boolean}true">
+                                        <rtePlugins jcr:primaryType="nt:unstructured">
+                                            <format jcr:primaryType="nt:unstructured" features="bold,italic"/>
+                                            <links jcr:primaryType="nt:unstructured" features="modifylink,unlink"/>
+                                        </rtePlugins>
+                                    </intro>
+                                </items>
+                            </column>
+                        </items>
+                    </newsroom>
+                </items>
+            </tabs>
+        </items>
+    </content>
+</jcr:root>

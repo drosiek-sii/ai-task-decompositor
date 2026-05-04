@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Beads task: ax5 (template skeleton).
+
+  This single file is the "structure" subtree of the editable template — i.e.
+  the locked-on-every-page chrome. It is annotated with where three other
+  ready tasks contribute their wiring, instead of duplicating files per task:
+
+    - 9x8 — wires Global Header XF (top, locked) and Global Footer XF (bottom, locked)
+    - l7l — wires Article Header group (Core Title + Article Meta + Social Share)
+    - 6x2 — wires editable Layout Container with policy-restricted palette
+
+  In a real project each of those tickets would be a small commit modifying
+  THIS file (and the matching policies file).
+-->
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+          xmlns:cq="http://www.day.com/jcr/cq/1.0"
+          xmlns:jcr="http://www.jcp.org/jcr/1.0"
+          xmlns:nt="http://www.jcp.org/nt/1.0"
+          jcr:primaryType="cq:Page">
+    <jcr:content
+        jcr:primaryType="cq:PageContent"
+        sling:resourceType="qantas/components/page/press-release-page"
+        cq:lastModified="{Date}2026-04-30T00:00:00.000+10:00">
+
+        <!-- Locked chrome root. Authors cannot edit children of this node. -->
+        <root jcr:primaryType="nt:unstructured"
+              sling:resourceType="qantas/components/structure/page"
+              cq:isContainer="{Boolean}true"
+              editable="{Boolean}false">
+
+            <!-- ====================================================================
+                 Beads task: 9x8 — Global Header XF reference (locked).
+                 The XF itself is created by task r8t under
+                 /content/experience-fragments/qantas/newsroom/header.
+                 ==================================================================== -->
+            <header_xf jcr:primaryType="nt:unstructured"
+                       sling:resourceType="core/wcm/components/experiencefragment/v2/experiencefragment"
+                       fragmentVariationPath="/content/experience-fragments/qantas/newsroom/header/master"
+                       editable="{Boolean}false"/>
+
+            <!-- ====================================================================
+                 Beads task: l7l — Article Header group (Core Title + Article Meta + Social Share).
+                 Group is locked at the template level; values flow from page properties.
+                 ==================================================================== -->
+            <article_header jcr:primaryType="nt:unstructured"
+                            sling:resourceType="qantas/components/content/articleheader"
+                            editable="{Boolean}false">
+                <title jcr:primaryType="nt:unstructured"
+                       sling:resourceType="core/wcm/components/title/v3/title"
+                       linkDisabled="{Boolean}true"
+                       type="h1"/>
+                <meta jcr:primaryType="nt:unstructured"
+                      sling:resourceType="qantas/components/page/press-release-page/article-meta"/>
+                <social_share jcr:primaryType="nt:unstructured"
+                              sling:resourceType="qantas/components/content/socialshare"/>
+            </article_header>
+
+            <!-- ====================================================================
+                 Two-column main row: sidebar (related posts) precedes article body
+                 in DOM order, per source HTML.
+                 ==================================================================== -->
+            <main jcr:primaryType="nt:unstructured"
+                  sling:resourceType="wcm/foundation/components/responsivegrid">
+
+                <related_posts jcr:primaryType="nt:unstructured"
+                               sling:resourceType="qantas/components/content/newsroomlist"
+                               editable="{Boolean}false"
+                               role="aside"/>
+
+                <!-- ================================================================
+                     Beads task: 6x2 — editable Layout Container (article body).
+                     Container itself is editable but its policy (separate file)
+                     restricts its allowed-component palette to:
+                       Core Title, Core Text, Financial Data Table, Footnotes.
+                     The first child is auto-prefixed with the page `intro`
+                     property (Decision #12 in the migration plan).
+                     ================================================================ -->
+                <article_body jcr:primaryType="nt:unstructured"
+                              sling:resourceType="wcm/foundation/components/responsivegrid"
+                              editable="{Boolean}true"/>
+            </main>
+
+            <!-- Beads task: 9x8 — Global Footer XF reference (locked). -->
+            <footer_xf jcr:primaryType="nt:unstructured"
+                       sling:resourceType="core/wcm/components/experiencefragment/v2/experiencefragment"
+                       fragmentVariationPath="/content/experience-fragments/qantas/newsroom/footer/master"
+                       editable="{Boolean}false"/>
+        </root>
+    </jcr:content>
+</jcr:root>

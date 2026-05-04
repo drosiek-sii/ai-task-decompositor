@@ -1,0 +1,21 @@
+<!--/* Beads task: doz — HTL renders entries with deterministic _ftn{n} anchors.
+        Numbering is positional and emitted by HTL itself; never authored. */-->
+<sly data-sly-use.fn="com.qantas.core.models.Footnotes"/>
+
+<aside class="footnotes"
+       data-sly-test="${fn.entries.size > 0}"
+       role="doc-endnotes">
+    <ol class="footnotes__list">
+        <li data-sly-list.entry="${fn.entries}"
+            data-sly-test.index="${entryList.count}"
+            id="_ftn${index}"
+            class="footnotes__item">
+
+            <span class="footnotes__text" data-sly-element="span">${entry.text @ context='html'}</span>
+
+            <a class="footnotes__back"
+               href="#_ftnref${index}"
+               aria-label="Return to reference ${index} in body">↩</a>
+        </li>
+    </ol>
+</aside>

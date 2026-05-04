@@ -1,0 +1,8 @@
+<!--/* Beads task: fq0 — HTL partial rendering "Published on …" line.
+        Wired into the Article Header group from task l7l. */-->
+<sly data-sly-use.meta="com.qantas.core.models.ArticleMeta"/>
+
+<p class="article-meta"
+   data-sly-test="${meta.formattedDate}">
+    <time datetime="${meta.isoDate}">${meta.formattedDate}</time>
+</p>

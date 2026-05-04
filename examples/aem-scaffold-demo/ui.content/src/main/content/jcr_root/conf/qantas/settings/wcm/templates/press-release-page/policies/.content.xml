@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Beads task: ax5 — template policies subtree.
+
+  Annotated with task 6x2 (allowed-components palette for the article body
+  Layout Container). In a real project, `bd update 6x2 --claim` and edit
+  THIS file under the article_body/ node.
+-->
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+          xmlns:cq="http://www.day.com/jcr/cq/1.0"
+          xmlns:jcr="http://www.jcp.org/jcr/1.0"
+          xmlns:nt="http://www.jcp.org/nt/1.0"
+          jcr:primaryType="cq:Page">
+    <jcr:content
+        jcr:primaryType="cq:PageContent"
+        sling:resourceType="wcm/core/components/policies/mappings">
+
+        <root jcr:primaryType="nt:unstructured">
+            <!-- ====================================================================
+                 Beads task: 6x2 — restrict the article body container's palette.
+                 The cq:policy reference points at a structuredItem under
+                 /conf/qantas/settings/wcm/policies/ in a real project; here we
+                 inline the allowed components for clarity.
+                 ==================================================================== -->
+            <main jcr:primaryType="nt:unstructured">
+                <article_body jcr:primaryType="nt:unstructured"
+                              cq:policy="qantas/components/responsivegrid/press-release-body">
+                    <!--
+                      Allowed components on the press-release body container:
+                        - core/wcm/components/title/v3/title
+                        - core/wcm/components/text/v2/text     (RTE policy: anchor links enabled — task 8x7)
+                        - qantas/components/content/financialdatatable
+                        - qantas/components/content/footnotes
+                      No image/embed/button/etc.
+                    -->
+                </article_body>
+            </main>
+        </root>
+    </jcr:content>
+</jcr:root>

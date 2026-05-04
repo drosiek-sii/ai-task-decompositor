@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Beads task: doz — Footnotes component root.
+  Renders ordered footnote entries with deterministic id="_ftn1"…"_ftnN" anchors.
+-->
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+          xmlns:cq="http://www.day.com/jcr/cq/1.0"
+          xmlns:jcr="http://www.jcp.org/jcr/1.0"
+          jcr:primaryType="cq:Component"
+          jcr:title="Footnotes"
+          jcr:description="Numbered footnote list with deterministic anchor IDs and back-references."
+          componentGroup="Qantas - Newsroom"/>

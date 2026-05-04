@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Beads task: ax5 — initial content node.
+  "initial" is what new pages are seeded with; structure is what is locked
+  template-side. Authors only see structure + their additions to initial.
+-->
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+          xmlns:cq="http://www.day.com/jcr/cq/1.0"
+          xmlns:jcr="http://www.jcp.org/jcr/1.0"
+          jcr:primaryType="cq:Page">
+    <jcr:content
+        jcr:primaryType="cq:PageContent"
+        sling:resourceType="qantas/components/page/press-release-page">
+        <root jcr:primaryType="nt:unstructured"
+              sling:resourceType="qantas/components/structure/page"/>
+    </jcr:content>
+</jcr:root>

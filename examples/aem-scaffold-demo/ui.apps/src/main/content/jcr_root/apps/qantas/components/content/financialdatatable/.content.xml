@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Beads task: yqk — Financial Data Table component root.
+  Structured authoring of capacity tables. NOT a styled HTML paste in RTE
+  (Decision #7 in the migration plan).
+-->
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+          xmlns:cq="http://www.day.com/jcr/cq/1.0"
+          xmlns:jcr="http://www.jcp.org/jcr/1.0"
+          jcr:primaryType="cq:Component"
+          jcr:title="Financial Data Table"
+          jcr:description="Structured rows × cells with caption, header toggle, striping, per-cell pos/neg class, footnote anchors."
+          componentGroup="Qantas - Newsroom"/>

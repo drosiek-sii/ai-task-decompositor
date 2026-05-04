@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Beads task: ax5 (Create press-release-page editable template skeleton)
+  This file is the template root. It declares the template type, status,
+  and references the structure/initial/policies subtrees under this folder.
+-->
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+          xmlns:cq="http://www.day.com/jcr/cq/1.0"
+          xmlns:jcr="http://www.jcp.org/jcr/1.0"
+          jcr:primaryType="cq:Template"
+          jcr:title="Press Release Page"
+          jcr:description="Newsroom press-release article template (Qantas)"
+          allowedPaths="[/content/qantas/newsroom/media-releases(/.*)?]"
+          ranking="{Long}10"
+          status="enabled">
+    <jcr:content
+        jcr:primaryType="cq:PageContent"
+        sling:resourceType="qantas/components/page/press-release-page"/>
+</jcr:root>

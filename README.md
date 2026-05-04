@@ -243,6 +243,10 @@ npx tsx scripts/smoke-parser.ts
 
 Verifies that the markdown parser detects sections and task hints, the normalizer rejects empty titles/AC, and `mapTaskToBdPayload` produces the right `bd create` arguments.
 
+## AEM scaffold demo
+
+Under [examples/aem-scaffold-demo/](examples/aem-scaffold-demo/) there is a **non-runnable** structural mock-up showing what the AEM artefacts produced from `examples/QANTAS_PAGE_MIGRATION_PLAN.md` would look like on disk: page component + dialog, editable template, Experience Fragment, two custom components (Footnotes, Financial Data Table), and Sling Models. See [examples/aem-scaffold-demo/README.md](examples/aem-scaffold-demo/README.md) for context and [examples/aem-scaffold-demo/MAPPING.md](examples/aem-scaffold-demo/MAPPING.md) for the Beads-task-to-file mapping. Nothing in the demo touches the agent-beads runtime.
+
 ## Roadmap (in case anyone asks)
 
 - [ ] Beads MCP client (once a server exists)

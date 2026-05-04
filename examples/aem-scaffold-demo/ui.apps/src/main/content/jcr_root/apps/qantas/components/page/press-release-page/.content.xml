@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Beads task: cyc (Add releaseDate + intro page properties).
+  Page component proxies the archetype base page, which itself proxies
+  Core Components Page v3. We layer in press-release-specific behaviour.
+-->
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+          xmlns:cq="http://www.day.com/jcr/cq/1.0"
+          xmlns:jcr="http://www.jcp.org/jcr/1.0"
+          jcr:primaryType="cq:Component"
+          jcr:title="Press Release Page"
+          jcr:description="Newsroom press release. Adds releaseDate (datetime) and intro (rich-text) page properties."
+          componentGroup=".hidden"
+          sling:resourceSuperType="qantas/components/page/page"/>
