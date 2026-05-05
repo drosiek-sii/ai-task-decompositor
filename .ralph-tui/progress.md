@@ -16,6 +16,16 @@ after each iteration and it's included in prompts for context.
 
 ---
 
+## 2026-05-05 - ai-task-decompositor-f01
+- Implementation was already complete in a previous iteration
+- Files: `core/src/main/java/com/beads/core/models/NewsroomListItemModel.java`, `core/src/test/.../NewsroomListItemModelTest.java`, `ui.apps/.../newsroomlist/list.html`, `ui.apps/.../newsroomlist/item/item.html`
+- **What was implemented**: `NewsroomListItemModel` Sling Model wraps per-item resource from Core List, reads `releaseCity` from `jcr:content` child, exposes `Optional<String> city` for null-safe HTL conditional, formats `releaseDate` Calendar with ordinal suffixes (1st/2nd/3rd/4th, 11th-13th special-cased). HTL uses `data-sly-test="${model.city.present}"` and `${model.city.get}` pattern.
+- **Learnings:**
+  - Core List exposes `listItems` with `.path` and `.url` per item; custom per-item models must be loaded via `data-sly-resource="${item.path @ resourceType='...'}"` — this re-adapts the page path through the custom resourceType
+  - `Optional<T>` in HTL: `.present` checks `isPresent()`, `.get` retrieves value — HTL getter naming convention strips `is`/`get` prefix
+  - `resolvePageContentResource` helper handles both raw page resource and jcr:content resource as input (delegation wrapper pattern)
+---
+
 ## 2026-05-05 - ai-task-decompositor-4zs
 - Implementation was already complete in a previous iteration
 - File: `aem-project-archetype/beads/core/src/main/java/com/beads/core/models/FootnotesModel.java`
