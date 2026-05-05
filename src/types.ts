@@ -51,13 +51,24 @@ export interface ValidationResult {
   validator: "claude-cli" | "local-llm";
 }
 
+/**
+ * One round of "validate this draft → here is what the validator said".
+ * Captures the draft as it stood at THAT moment plus the validator's verdict,
+ * so the structured run log can show how a task evolved across refinements.
+ */
+export interface ValidationAttempt {
+  /** Draft submitted to the validator at this iteration. */
+  draft: TaskDraft;
+  result: ValidationResult;
+}
+
 export interface ValidatedTask {
   draft: TaskDraft;
   result: ValidationResult;
   /** Number of refinement passes performed before passing. */
   iterations: number;
-  /** History of all attempts, useful for verbose mode. */
-  history: ValidationResult[];
+  /** Full draft+result history of every validator round. */
+  history: ValidationAttempt[];
 }
 
 export interface CreatedBead {
@@ -95,4 +106,6 @@ export interface CliOptions {
   defaultPriority: BdPriority;
   /** Optional labels applied to every created bead. */
   defaultLabels: string[];
+  /** When set, write a structured validator history log to this path. */
+  logFile?: string;
 }

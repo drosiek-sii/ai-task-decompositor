@@ -11,6 +11,7 @@ import { readInput } from "./input/readInput.js";
 import { createLlmClient } from "./llm/createLlmClient.js";
 import { Logger } from "./logger.js";
 import { printSummary } from "./output/printSummary.js";
+import { writeValidationLog, writeValidationLogJson } from "./output/validationLog.js";
 import { parseMarkdown } from "./parser/parseMarkdown.js";
 import { draftTasks } from "./tasks/draftTasks.js";
 import type { CliOptions, CreatedBead, RunSummary, ValidatedTask } from "./types.js";
@@ -147,18 +148,38 @@ async function runDraft(opts: CliOptions): Promise<number> {
       validated.push(r);
     } catch (err) {
       log.error(`Validation crashed for "${draft.title}": ${(err as Error).message}`);
+      const crashResult = {
+        passed: false,
+        issues: [
+          { rule: "other" as const, severity: "blocker" as const, message: (err as Error).message },
+        ],
+        validator: llm.id,
+      };
       validated.push({
         draft,
-        result: {
-          passed: false,
-          issues: [
-            { rule: "other", severity: "blocker", message: (err as Error).message },
-          ],
-          validator: llm.id,
-        },
+        result: crashResult,
         iterations: 0,
-        history: [],
+        history: [{ draft, result: crashResult }],
       });
+    }
+  }
+
+  // Step 6.5: write structured validator history log (if requested)
+  if (opts.logFile) {
+    try {
+      const meta = {
+        inputKind: raw.kind,
+        inputSource: raw.source,
+        generatedAt: new Date().toISOString(),
+        validatorBackend: llm.id,
+        dryRun: opts.dryRun,
+      };
+      const mdPath = await writeValidationLog(opts.logFile, meta, validated);
+      const jsonPath = await writeValidationLogJson(opts.logFile, meta, validated);
+      log.info(`Wrote validator log: ${mdPath}`);
+      log.info(`Wrote validator log (JSON): ${jsonPath}`);
+    } catch (err) {
+      log.warn(`Failed to write validator log: ${(err as Error).message}`);
     }
   }
 

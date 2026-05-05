@@ -63,10 +63,11 @@ export class BdCliClient implements BeadsClient {
 
       const { stdout } = await runBd(this.bin, args);
       const id = stdout.trim().split(/\s+/)[0];
-      // bd uses the project name as the issue-id prefix (e.g. "myproj-42",
-      // "ai-beads-task-agent-943"), not always "bd-N". Validate generically:
-      // <prefix>-<number>, where prefix is one or more word/hyphen chars.
-      if (!id || !/^[A-Za-z][\w-]*-\d+$/.test(id)) {
+      // bd issue ids are <project-prefix>-<base36-suffix>. The suffix is
+      // 3+ alphanumeric chars (NOT only digits — e.g. "ai-beads-task-agent-57s"
+      // is valid). Validate generically: starts with a letter, contains a
+      // hyphen, ends with [A-Za-z0-9]+. No whitespace.
+      if (!id || !/^[A-Za-z][\w-]*-[A-Za-z0-9]+$/.test(id)) {
         throw new Error(
           `bd create returned unexpected id: "${stdout.trim().slice(0, 200)}"`
         );

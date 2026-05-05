@@ -22,6 +22,7 @@ Drafter options:
   --type <t>                 Default bd type when not set per-task: task|feature|bug|epic|chore|decision (default: task).
   --priority <P0..P4>        Default bd priority (default: P2).
   --label <name>             Add a label to every created bead. Repeatable.
+  --log-file <path>          Write a structured validator history log to this path (one entry per task with input draft, every brainstorm response, and final task).
 
 Export options:
   --output-dir <path>        Where to write the export files (default: ./beads-exports).
@@ -92,6 +93,9 @@ function parseDraftArgs(argv: string[]): ParsedArgs {
         break;
       case "--label":
         opts.defaultLabels = [...opts.defaultLabels, required(argv, ++i, a)];
+        break;
+      case "--log-file":
+        opts.logFile = required(argv, ++i, a);
         break;
       default:
         if (a.startsWith("--")) {

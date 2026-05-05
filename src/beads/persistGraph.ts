@@ -75,9 +75,9 @@ function resolveDepTarget(
 ): string | undefined {
   const trimmed = ref.trim();
   if (localToBeadId.has(trimmed)) return localToBeadId.get(trimmed);
-  // bd issue ids are <project-prefix>-<number>; external project refs use
-  // the "external:..." scheme. Accept both as already-resolved targets.
-  if (/^[A-Za-z][\w-]*-\d+$/.test(trimmed) || /^external:/.test(trimmed)) {
+  // bd issue ids are <project-prefix>-<base36-suffix>; external project refs
+  // use the "external:..." scheme. Accept both as already-resolved targets.
+  if (/^[A-Za-z][\w-]*-[A-Za-z0-9]+$/.test(trimmed) || /^external:/.test(trimmed)) {
     return trimmed;
   }
   return undefined;

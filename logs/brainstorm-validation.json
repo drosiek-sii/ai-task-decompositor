@@ -1,0 +1,2172 @@
+{
+  "meta": {
+    "inputKind": "markdown",
+    "inputSource": "/Users/dariuszrosiek/Documents/Projects/ai-beads-task-agent/examples/QANTAS_PAGE_MIGRATION_PLAN.md",
+    "generatedAt": "2026-05-05T08:50:31.580Z",
+    "validatorBackend": "claude-cli",
+    "dryRun": false
+  },
+  "tasks": [
+    {
+      "localId": "T-001",
+      "title": "Inspect archetype for existing global header/footer Experience Fragments and produce reuse/create decision",
+      "iterations": 1,
+      "passed": true,
+      "finalDraft": {
+        "localId": "T-001",
+        "title": "Inspect archetype for existing global header/footer Experience Fragments and produce reuse/create decision",
+        "description": "Why: Decision #5 in the plan defers the reuse-vs-create call to Stage 2 codebase inspection. Downstream header/footer tickets (T-013, T-014) need a definitive answer before they can proceed.\n\nWhat: Inspect `aem-project-archetype/{ARCHETYPE_DIR}/ui.content` for existing global header and global footer Experience Fragments (typical locations: `content/experience-fragments/<site>/header`, `.../footer`, or any site-wide chrome XFs). Catalogue what exists, what fields each XF exposes, and whether each can be extended to satisfy the plan's content inventory (brand + primary Qantas nav + Newsroom `nav-tools` for header; logo + social + Privacy/Terms + Useful Links + copyright for footer).\n\nDeliverable: a short written finding committed under `aem-project-archetype/{ARCHETYPE_DIR}/` (e.g., `docs/migration/header-footer-inspection.md`) stating per-XF: path, exists yes/no, reuse-or-extend-or-create verdict, and any gaps to fill.\n\nEdge cases: an XF may exist with a different content model (e.g., header without Newsroom nav) — in that case the verdict is \"extend\" and gaps must be enumerated.",
+        "acceptance_criteria": [
+          "Given the archetype directory, when the inspection is run, then a finding doc lists every candidate header/footer XF path that was checked.",
+          "Given the inspection results, when reading the finding doc, then the verdict (reuse / extend / create) is explicit for both header and footer.",
+          "Given an \"extend\" verdict, when reading the finding doc, then the missing fields/sub-sections are enumerated as a checklist consumable by T-013/T-014."
+        ],
+        "dependencies": [],
+        "type": "chore",
+        "priority": "P1",
+        "labels": [
+          "agent-beads",
+          "aem",
+          "investigation",
+          "ui.content",
+          "experience-fragments"
+        ]
+      },
+      "history": [
+        {
+          "draft": {
+            "localId": "T-001",
+            "title": "Inspect archetype for existing global header/footer Experience Fragments and produce reuse/create decision",
+            "description": "Why: Decision #5 in the plan defers the reuse-vs-create call to Stage 2 codebase inspection. Downstream header/footer tickets (T-013, T-014) need a definitive answer before they can proceed.\n\nWhat: Inspect `aem-project-archetype/{ARCHETYPE_DIR}/ui.content` for existing global header and global footer Experience Fragments (typical locations: `content/experience-fragments/<site>/header`, `.../footer`, or any site-wide chrome XFs). Catalogue what exists, what fields each XF exposes, and whether each can be extended to satisfy the plan's content inventory (brand + primary Qantas nav + Newsroom `nav-tools` for header; logo + social + Privacy/Terms + Useful Links + copyright for footer).\n\nDeliverable: a short written finding committed under `aem-project-archetype/{ARCHETYPE_DIR}/` (e.g., `docs/migration/header-footer-inspection.md`) stating per-XF: path, exists yes/no, reuse-or-extend-or-create verdict, and any gaps to fill.\n\nEdge cases: an XF may exist with a different content model (e.g., header without Newsroom nav) — in that case the verdict is \"extend\" and gaps must be enumerated.",
+            "acceptance_criteria": [
+              "Given the archetype directory, when the inspection is run, then a finding doc lists every candidate header/footer XF path that was checked.",
+              "Given the inspection results, when reading the finding doc, then the verdict (reuse / extend / create) is explicit for both header and footer.",
+              "Given an \"extend\" verdict, when reading the finding doc, then the missing fields/sub-sections are enumerated as a checklist consumable by T-013/T-014."
+            ],
+            "dependencies": [],
+            "type": "chore",
+            "priority": "P1",
+            "labels": [
+              "agent-beads",
+              "aem",
+              "investigation",
+              "ui.content",
+              "experience-fragments"
+            ]
+          },
+          "result": {
+            "passed": true,
+            "issues": [
+              {
+                "rule": "specificity",
+                "severity": "warning",
+                "message": "`{ARCHETYPE_DIR}` is a placeholder — resolve to the actual archetype subdirectory (e.g., `core`, `ui.content`) before execution to avoid ambiguity."
+              },
+              {
+                "rule": "acceptance_criteria",
+                "severity": "warning",
+                "message": "Consider adding a criterion that the finding doc is committed to the repo (path + commit) so downstream tickets can link to it."
+              }
+            ],
+            "rationale": "Task is clear, atomic, and sized for a single sitting. It has a concrete deliverable (a finding doc at a specific path), explicit verdict requirements, and testable acceptance criteria tied to downstream consumers (T-013/T-014). No blocking dependencies. Minor warnings about a path placeholder and commit confirmation do not block acceptance.",
+            "validator": "claude-cli"
+          }
+        }
+      ]
+    },
+    {
+      "localId": "T-002",
+      "title": "Add `releaseDate` (typed datetime) and `releaseCity` (string) page properties to press-release page component",
+      "iterations": 1,
+      "passed": true,
+      "finalDraft": {
+        "localId": "T-002",
+        "title": "Add `releaseDate` (typed datetime) and `releaseCity` (string) page properties to press-release page component",
+        "description": "Why: Decision #3 mandates a dedicated typed `releaseDate` property (do NOT reuse `cq:lastModified` or `jcr:created`). Decision #2 requires an optional `releaseCity` for the Related Posts meta line. These properties feed Article Meta rendering (T-008), Related Posts model (T-016), and OG/twitter meta tags.\n\nWhat: Extend the press-release page component's `cq:dialog` (page properties dialog) under `aem-project-archetype/{ARCHETYPE_DIR}/ui.apps/.../components/page/press-release-page/` (or the proxy created in T-005) to include:\n- `./releaseDate` — datetime granite field, required, with a help description.\n- `./releaseCity` — text granite field, optional.\n\nValues persist on the page node so Sling Models and HTL can read them via `currentPage.properties` / `pageProperties`.\n\nEdge cases: ensure granite type stores ISO-8601 (`xsd:dateTime`) so server-side formatting is deterministic.",
+        "acceptance_criteria": [
+          "Given a press-release page in author, when an editor opens Page Properties, then `Release Date` (datetime picker) and `Release City` (text) fields appear on a sensibly named tab.",
+          "Given a saved page with `releaseDate=2026-04-14T09:03:00`, when reading `jcr:content` via JCR/Sling, then the value is stored as `xsd:dateTime`.",
+          "Given `releaseCity` left empty, when the page is saved, then no property is persisted (or it is persisted as empty string consistently with other archetype patterns) and downstream HTL conditional rendering treats it as absent."
+        ],
+        "dependencies": [
+          "T-005"
+        ],
+        "type": "task",
+        "priority": "P1",
+        "labels": [
+          "agent-beads",
+          "aem",
+          "ui.apps",
+          "page-properties",
+          "dialog"
+        ]
+      },
+      "history": [
+        {
+          "draft": {
+            "localId": "T-002",
+            "title": "Add `releaseDate` (typed datetime) and `releaseCity` (string) page properties to press-release page component",
+            "description": "Why: Decision #3 mandates a dedicated typed `releaseDate` property (do NOT reuse `cq:lastModified` or `jcr:created`). Decision #2 requires an optional `releaseCity` for the Related Posts meta line. These properties feed Article Meta rendering (T-008), Related Posts model (T-016), and OG/twitter meta tags.\n\nWhat: Extend the press-release page component's `cq:dialog` (page properties dialog) under `aem-project-archetype/{ARCHETYPE_DIR}/ui.apps/.../components/page/press-release-page/` (or the proxy created in T-005) to include:\n- `./releaseDate` — datetime granite field, required, with a help description.\n- `./releaseCity` — text granite field, optional.\n\nValues persist on the page node so Sling Models and HTL can read them via `currentPage.properties` / `pageProperties`.\n\nEdge cases: ensure granite type stores ISO-8601 (`xsd:dateTime`) so server-side formatting is deterministic.",
+            "acceptance_criteria": [
+              "Given a press-release page in author, when an editor opens Page Properties, then `Release Date` (datetime picker) and `Release City` (text) fields appear on a sensibly named tab.",
+              "Given a saved page with `releaseDate=2026-04-14T09:03:00`, when reading `jcr:content` via JCR/Sling, then the value is stored as `xsd:dateTime`.",
+              "Given `releaseCity` left empty, when the page is saved, then no property is persisted (or it is persisted as empty string consistently with other archetype patterns) and downstream HTL conditional rendering treats it as absent."
+            ],
+            "dependencies": [
+              "T-005"
+            ],
+            "type": "task",
+            "priority": "P1",
+            "labels": [
+              "agent-beads",
+              "aem",
+              "ui.apps",
+              "page-properties",
+              "dialog"
+            ]
+          },
+          "result": {
+            "passed": true,
+            "issues": [
+              {
+                "rule": "specificity",
+                "severity": "warning",
+                "message": "Path contains placeholder `{ARCHETYPE_DIR}` and `...`; resolve once T-005 lands so the exact dialog path is unambiguous."
+              },
+              {
+                "rule": "acceptance_criteria",
+                "severity": "warning",
+                "message": "AC#3 allows two behaviors (absent vs empty string). Pick one to avoid downstream ambiguity in T-008/T-016."
+              }
+            ],
+            "rationale": "Task is clear, atomic, properly scoped (≤1 day), feasible in AEM, with concrete dialog fields, typed storage requirement, and testable Given/When/Then criteria. Dependency on T-005 (proxy component) is real and stated. Minor warnings on path placeholders and one ambiguous AC do not block.",
+            "validator": "claude-cli"
+          }
+        }
+      ]
+    },
+    {
+      "localId": "T-003",
+      "title": "Add `intro` rich-text page property and emit it into OG/meta tags",
+      "iterations": 2,
+      "passed": true,
+      "finalDraft": {
+        "localId": "T-003",
+        "title": "Add `intro` rich-text page property and emit it into OG/meta tags",
+        "description": "Why: Decision #12 (single source of truth for intro): the `intro` page property must drive `<meta name=\"intro\">`, `<meta property=\"og:description\">`, and `<meta name=\"twitter:description\">`. The same property will also drive the first body paragraph, but body rendering is owned by T-007/T-009 — this task is scoped to the property + meta emission only.\n\nWhat:\n1. Add an `./intro` rich-text granite field to the press-release page-properties dialog at `ui.apps/src/main/content/jcr_root/apps/<project>/components/page/press-release/_cq_dialog/.content.xml` (same file touched by T-002).\n2. Emit `intro` into the three meta tags above from `ui.apps/src/main/content/jcr_root/apps/<project>/components/page/press-release/customheaderlibs.html`.\n3. Strip HTML for meta-tag content using server-side Jsoup (`Jsoup.clean(value, Safelist.none())`) exposed via a Sling Model or Use-class — not HTL `@ context`, since meta `content=` requires plain text, not HTML-escaped markup.\n\nEdge cases: when `intro` is empty/blank after stripping, the three meta tags MUST NOT be emitted at all (no empty `content=\"\"`). Rich text remains intact in JCR for body rendering downstream.",
+        "acceptance_criteria": [
+          "Given an editor sets `intro` to \"Qantas Group today provided a market update.\", when the page renders, then `<meta name=\"intro\">`, `<meta property=\"og:description\">`, and `<meta name=\"twitter:description\">` are present and each `content` attribute equals the plain-text string exactly.",
+          "Given `intro` is empty or contains only whitespace/empty markup after HTML stripping, when the page renders, then none of the three meta tags are emitted in the response HTML.",
+          "Given `intro` contains `<strong>bold</strong> and <em>italic</em>`, when the page renders, then meta-tag `content` equals `bold and italic` (tags stripped) and the stored JCR property still contains the original rich-text markup for downstream body rendering.",
+          "Given `intro` contains characters requiring HTML attribute escaping (`\"`, `&`, `<`), when the page renders, then meta-tag `content` is properly attribute-escaped and the page validates as well-formed HTML."
+        ],
+        "dependencies": [
+          "T-005"
+        ],
+        "type": "task",
+        "priority": "P1",
+        "labels": [
+          "agent-beads",
+          "aem",
+          "ui.apps",
+          "page-properties",
+          "seo"
+        ]
+      },
+      "history": [
+        {
+          "draft": {
+            "localId": "T-003",
+            "title": "Add `intro` rich-text page property and wire it to OG/meta tags + first body paragraph",
+            "description": "Why: Decision #12 (single source of truth for intro): the `intro` page property must drive both `<meta name=\"intro\">` / `<meta property=\"og:description\">` / `<meta name=\"twitter:description\">` AND the first paragraph rendered in the article body. Authors edit once.\n\nWhat:\n1. Add `./intro` rich-text granite field to the press-release page properties dialog (T-002 sibling change, or piggyback on the same dialog file).\n2. Update the page component's `customheaderlibs.html` (or equivalent meta-emission HTL) to render `intro` into the meta tags listed above. Strip HTML for meta tags; keep rich text for body rendering.\n3. Ensure the article body renders this `intro` as the first Core Text node — implementation detail handled in T-007 (article body container) and T-009 (intro paragraph rendering).\n\nEdge cases: empty intro must not emit empty meta tags. Rich text in `intro` must be HTML-escaped/stripped for meta content.",
+            "acceptance_criteria": [
+              "Given an editor sets `intro` to \"Qantas Group today provided a market update.\", when the page renders, then `<meta name=\"intro\">`, `<meta property=\"og:description\">`, and `<meta name=\"twitter:description\">` all contain the plain-text equivalent.",
+              "Given `intro` is empty, when the page renders, then none of the above meta tags are emitted (or they are emitted with an empty string consistent with archetype convention — pick one and document it).",
+              "Given `intro` contains rich text with `<strong>` tags, when meta tags render, then tags are stripped to plain text for meta but preserved for body rendering."
+            ],
+            "dependencies": [
+              "T-005"
+            ],
+            "type": "task",
+            "priority": "P1",
+            "labels": [
+              "agent-beads",
+              "aem",
+              "ui.apps",
+              "page-properties",
+              "seo"
+            ]
+          },
+          "result": {
+            "passed": false,
+            "issues": [
+              {
+                "rule": "acceptance_criteria",
+                "severity": "blocker",
+                "message": "AC#2 leaves the empty-intro behavior ambiguous (\"pick one and document it\"). Acceptance criteria must define done, not defer the decision. Specify the exact behavior (e.g., omit the tags entirely)."
+              },
+              {
+                "rule": "atomicity",
+                "severity": "warning",
+                "message": "Body rendering is explicitly punted to T-007/T-009 but those are not listed as dependencies (only T-005 is). Either list them as dependencies or scope this task strictly to the property + meta-tag emission and remove the body-rendering claim from the description."
+              },
+              {
+                "rule": "specificity",
+                "severity": "warning",
+                "message": "\"customheaderlibs.html (or equivalent)\" and \"T-002 sibling change, or piggyback\" hedge on the actual file targets. Name the concrete component path (e.g., apps/<project>/components/page/press-release/customheaderlibs.html) and the dialog file."
+              },
+              {
+                "rule": "specificity",
+                "severity": "warning",
+                "message": "HTML-stripping approach is unspecified. Call out the mechanism (e.g., HTL `@ context='text'`, server-side Jsoup.clean with Whitelist.none(), or a Use-class) so two engineers don't pick different ones."
+              }
+            ],
+            "suggested": {
+              "localId": "T-003",
+              "title": "Add `intro` rich-text page property and emit it into OG/meta tags",
+              "description": "Why: Decision #12 (single source of truth for intro): the `intro` page property must drive `<meta name=\"intro\">`, `<meta property=\"og:description\">`, and `<meta name=\"twitter:description\">`. The same property will also drive the first body paragraph, but body rendering is owned by T-007/T-009 — this task is scoped to the property + meta emission only.\n\nWhat:\n1. Add an `./intro` rich-text granite field to the press-release page-properties dialog at `ui.apps/src/main/content/jcr_root/apps/<project>/components/page/press-release/_cq_dialog/.content.xml` (same file touched by T-002).\n2. Emit `intro` into the three meta tags above from `ui.apps/src/main/content/jcr_root/apps/<project>/components/page/press-release/customheaderlibs.html`.\n3. Strip HTML for meta-tag content using server-side Jsoup (`Jsoup.clean(value, Safelist.none())`) exposed via a Sling Model or Use-class — not HTL `@ context`, since meta `content=` requires plain text, not HTML-escaped markup.\n\nEdge cases: when `intro` is empty/blank after stripping, the three meta tags MUST NOT be emitted at all (no empty `content=\"\"`). Rich text remains intact in JCR for body rendering downstream.",
+              "acceptance_criteria": [
+                "Given an editor sets `intro` to \"Qantas Group today provided a market update.\", when the page renders, then `<meta name=\"intro\">`, `<meta property=\"og:description\">`, and `<meta name=\"twitter:description\">` are present and each `content` attribute equals the plain-text string exactly.",
+                "Given `intro` is empty or contains only whitespace/empty markup after HTML stripping, when the page renders, then none of the three meta tags are emitted in the response HTML.",
+                "Given `intro` contains `<strong>bold</strong> and <em>italic</em>`, when the page renders, then meta-tag `content` equals `bold and italic` (tags stripped) and the stored JCR property still contains the original rich-text markup for downstream body rendering.",
+                "Given `intro` contains characters requiring HTML attribute escaping (`\"`, `&`, `<`), when the page renders, then meta-tag `content` is properly attribute-escaped and the page validates as well-formed HTML."
+              ],
+              "dependencies": [
+                "T-005"
+              ],
+              "type": "task",
+              "priority": "P1",
+              "labels": [
+                "agent-beads",
+                "aem",
+                "ui.apps",
+                "page-properties",
+                "seo"
+              ]
+            },
+            "rationale": "Scope is reasonable for one sitting and the intent is clear, but AC#2 explicitly defers a decision (\"pick one and document it\"), which violates testable-done. Cross-task references to T-007/T-009 aren't reflected in dependencies, and the implementation locations and HTML-stripping mechanism are hedged. Fix the empty-intro AC and tighten file/mechanism specificity; then it passes.",
+            "validator": "claude-cli"
+          }
+        },
+        {
+          "draft": {
+            "localId": "T-003",
+            "title": "Add `intro` rich-text page property and emit it into OG/meta tags",
+            "description": "Why: Decision #12 (single source of truth for intro): the `intro` page property must drive `<meta name=\"intro\">`, `<meta property=\"og:description\">`, and `<meta name=\"twitter:description\">`. The same property will also drive the first body paragraph, but body rendering is owned by T-007/T-009 — this task is scoped to the property + meta emission only.\n\nWhat:\n1. Add an `./intro` rich-text granite field to the press-release page-properties dialog at `ui.apps/src/main/content/jcr_root/apps/<project>/components/page/press-release/_cq_dialog/.content.xml` (same file touched by T-002).\n2. Emit `intro` into the three meta tags above from `ui.apps/src/main/content/jcr_root/apps/<project>/components/page/press-release/customheaderlibs.html`.\n3. Strip HTML for meta-tag content using server-side Jsoup (`Jsoup.clean(value, Safelist.none())`) exposed via a Sling Model or Use-class — not HTL `@ context`, since meta `content=` requires plain text, not HTML-escaped markup.\n\nEdge cases: when `intro` is empty/blank after stripping, the three meta tags MUST NOT be emitted at all (no empty `content=\"\"`). Rich text remains intact in JCR for body rendering downstream.",
+            "acceptance_criteria": [
+              "Given an editor sets `intro` to \"Qantas Group today provided a market update.\", when the page renders, then `<meta name=\"intro\">`, `<meta property=\"og:description\">`, and `<meta name=\"twitter:description\">` are present and each `content` attribute equals the plain-text string exactly.",
+              "Given `intro` is empty or contains only whitespace/empty markup after HTML stripping, when the page renders, then none of the three meta tags are emitted in the response HTML.",
+              "Given `intro` contains `<strong>bold</strong> and <em>italic</em>`, when the page renders, then meta-tag `content` equals `bold and italic` (tags stripped) and the stored JCR property still contains the original rich-text markup for downstream body rendering.",
+              "Given `intro` contains characters requiring HTML attribute escaping (`\"`, `&`, `<`), when the page renders, then meta-tag `content` is properly attribute-escaped and the page validates as well-formed HTML."
+            ],
+            "dependencies": [
+              "T-005"
+            ],
+            "type": "task",
+            "priority": "P1",
+            "labels": [
+              "agent-beads",
+              "aem",
+              "ui.apps",
+              "page-properties",
+              "seo"
+            ]
+          },
+          "result": {
+            "passed": true,
+            "issues": [],
+            "rationale": "Draft resolves all prior blockers and warnings: AC#2 now specifies tags MUST NOT be emitted on empty/blank intro; concrete file paths are named for both dialog and customheaderlibs.html; HTML-stripping mechanism is pinned to server-side Jsoup.clean with Safelist.none() via Sling Model/Use-class; body-rendering is explicitly out of scope and T-007/T-009 are not claimed as dependencies of this task. Scope is atomic, criteria are testable (including escaping and rich-text preservation), and T-005 is the sole stated dependency.",
+            "validator": "claude-cli"
+          }
+        }
+      ]
+    },
+    {
+      "localId": "T-004",
+      "title": "Create press-release editable template under /conf/<site>/settings/wcm/templates/press-release-page",
+      "iterations": 1,
+      "passed": true,
+      "finalDraft": {
+        "localId": "T-004",
+        "title": "Create press-release editable template under /conf/<site>/settings/wcm/templates/press-release-page",
+        "description": "Why: All press-release pages share the same structure (locked global header/footer XFs, locked Article Header group, editable body container, locked Related Posts list). The plan calls for a dedicated editable template so structure and policies are centrally controlled.\n\nWhat: Under `aem-project-archetype/{ARCHETYPE_DIR}/ui.content/.../conf/<site>/settings/wcm/templates/press-release-page/`, create:\n- `jcr:content` (template metadata)\n- `structure/` defining the locked regions: header XF placeholder, Article Header group placeholder, Layout Container (editable, body), Core List (Related Posts) placeholder, footer XF placeholder.\n- `initial/` left empty (or with the body container only) — the structure provides the locked chrome.\n- `policies/` skeleton (actual policies authored in T-018).\n- `template-types/` registration if not already present.\n\nMark the regions per the component tree in Section 5: header, article header, related posts, footer = template-locked; body Layout Container = unlocked.\n\nEdge cases: the template must allow the new page component (T-005) as `cq:allowedTemplates` target.",
+        "acceptance_criteria": [
+          "Given a fresh AEM author, when an author creates a new page from `press-release-page`, then the page renders with locked global header XF, locked Article Header group, editable body Layout Container, locked Related Posts, and locked global footer XF.",
+          "Given the template structure node, when inspected via CRXDE, then the Article Header, Related Posts, and XF references have `editable=false` / locked attributes set.",
+          "Given the body Layout Container, when an author opens it, then they can add components from the allowed list (defined in T-018) but cannot remove the container itself."
+        ],
+        "dependencies": [
+          "T-005"
+        ],
+        "type": "feature",
+        "priority": "P1",
+        "labels": [
+          "agent-beads",
+          "aem",
+          "ui.content",
+          "templates"
+        ]
+      },
+      "history": [
+        {
+          "draft": {
+            "localId": "T-004",
+            "title": "Create press-release editable template under /conf/<site>/settings/wcm/templates/press-release-page",
+            "description": "Why: All press-release pages share the same structure (locked global header/footer XFs, locked Article Header group, editable body container, locked Related Posts list). The plan calls for a dedicated editable template so structure and policies are centrally controlled.\n\nWhat: Under `aem-project-archetype/{ARCHETYPE_DIR}/ui.content/.../conf/<site>/settings/wcm/templates/press-release-page/`, create:\n- `jcr:content` (template metadata)\n- `structure/` defining the locked regions: header XF placeholder, Article Header group placeholder, Layout Container (editable, body), Core List (Related Posts) placeholder, footer XF placeholder.\n- `initial/` left empty (or with the body container only) — the structure provides the locked chrome.\n- `policies/` skeleton (actual policies authored in T-018).\n- `template-types/` registration if not already present.\n\nMark the regions per the component tree in Section 5: header, article header, related posts, footer = template-locked; body Layout Container = unlocked.\n\nEdge cases: the template must allow the new page component (T-005) as `cq:allowedTemplates` target.",
+            "acceptance_criteria": [
+              "Given a fresh AEM author, when an author creates a new page from `press-release-page`, then the page renders with locked global header XF, locked Article Header group, editable body Layout Container, locked Related Posts, and locked global footer XF.",
+              "Given the template structure node, when inspected via CRXDE, then the Article Header, Related Posts, and XF references have `editable=false` / locked attributes set.",
+              "Given the body Layout Container, when an author opens it, then they can add components from the allowed list (defined in T-018) but cannot remove the container itself."
+            ],
+            "dependencies": [
+              "T-005"
+            ],
+            "type": "feature",
+            "priority": "P1",
+            "labels": [
+              "agent-beads",
+              "aem",
+              "ui.content",
+              "templates"
+            ]
+          },
+          "result": {
+            "passed": true,
+            "issues": [
+              {
+                "rule": "acceptance_criteria",
+                "severity": "warning",
+                "message": "AC #3 references the allowed-component list defined in T-018; that AC cannot be fully verified until T-018 lands. Consider rewording to assert only that the body Layout Container is editable and non-removable here, and defer the allowed-components assertion to T-018."
+              },
+              {
+                "rule": "dependencies",
+                "severity": "warning",
+                "message": "T-018 (policies) is referenced in the description and AC #3 but not listed as a dependency. If T-018 is downstream (depends on this template skeleton), that's fine — but make the direction explicit in T-018."
+              },
+              {
+                "rule": "specificity",
+                "severity": "warning",
+                "message": "`{ARCHETYPE_DIR}` placeholder is unresolved; replace with the actual ui.content module path (e.g. `ui.content/src/main/content/jcr_root`) before implementation to avoid ambiguity."
+              }
+            ],
+            "rationale": "Task is concrete, atomic, and sized for one sitting. Paths, locked vs. editable regions, and acceptance checks are clear and testable in CRXDE/author. Dependency on T-005 (page component used as cq:allowedTemplates target) is correctly stated. Minor warnings around the unresolved archetype-dir placeholder and AC #3 leaning on T-018, but none are blockers.",
+            "validator": "claude-cli"
+          }
+        }
+      ]
+    },
+    {
+      "localId": "T-005",
+      "title": "Create press-release-page proxy component over Core Page v3",
+      "iterations": 2,
+      "passed": true,
+      "finalDraft": {
+        "localId": "T-005",
+        "title": "Create press-release-page proxy component over Core Page v3",
+        "description": "Why: The press-release template (T-004) needs a `sling:resourceType` to render. Per AEM archetype convention, proxy Core Page via `sling:resourceSuperType` rather than fork its HTL.\n\nWhat: Under `ui.apps/src/main/content/jcr_root/apps/<appId>/components/page/press-release-page/` (replace `<appId>` with the archetype's configured app id, e.g. value of `${appId}` in the archetype POM), create:\n- `.content.xml` — `jcr:primaryType=\"cq:Component\"`, `componentGroup=\".hidden\"` (page components are hidden), `jcr:title=\"Press Release Page\"`, `sling:resourceSuperType=\"core/wcm/components/page/v3/page\"`. If the archetype baseline is on a newer Core Components version, update to that exact version and record the version in the commit message; do NOT use a floating reference.\n- `customheaderlibs.html` — empty file with a `<!-- extended by T-003 (meta) and T-006 (clientlibs) -->` comment placeholder.\n- `customfooterlibs.html` — empty file with a placeholder comment for site footer clientlibs.\n- `_cq_dialog/.content.xml` — dialog inheriting Core Page dialog via `sling:resourceSuperType`, with project-specific tabs left empty here. T-002 and T-003 add their fields into this dialog.\n\nDo NOT duplicate Core Page HTL; rely on resource super type.",
+        "acceptance_criteria": [
+          "Given an author creates a press-release page from the T-004 template, when the page renders, then it inherits Core Page v3 rendering and `cq:Page` lifecycle behaviour with no HTL duplicated under the new component.",
+          "Given the component node in CRXDE, when inspected, then `sling:resourceSuperType` equals exactly `core/wcm/components/page/v3/page` (or the pinned version recorded in the commit), and `componentGroup` is `.hidden`.",
+          "Given `customheaderlibs.html` and `customfooterlibs.html`, when the page renders without T-003/T-006 changes applied, then both files exist, are syntactically valid HTL, and emit no markup that breaks Core Page output.",
+          "Given the page properties dialog, when opened on a press-release page, then all Core Page tabs/fields are present (inherited via super type) and the project-specific tab shell exists ready for T-002/T-003 to add fields."
+        ],
+        "dependencies": [
+          "T-004"
+        ],
+        "type": "feature",
+        "priority": "P0",
+        "labels": [
+          "agent-beads",
+          "aem",
+          "ui.apps",
+          "page-component"
+        ]
+      },
+      "history": [
+        {
+          "draft": {
+            "localId": "T-005",
+            "title": "Create press-release page component as proxy over Core Page",
+            "description": "Why: The template (T-004) needs a `sling:resourceType` to render. Per archetype convention, proxy Core Page rather than fork it.\n\nWhat: Under `aem-project-archetype/{ARCHETYPE_DIR}/ui.apps/.../components/page/press-release-page/`, create:\n- `.content.xml` with `sling:resourceSuperType=\"core/wcm/components/page/v3/page\"` (or current archetype-baseline Core Page version).\n- `customheaderlibs.html` (will be extended in T-003 for meta tags and T-006 for clientlib categories).\n- `customfooterlibs.html` (placeholder for site clientlibs).\n- `cq:dialog` extending the Core Page dialog with `releaseDate`, `releaseCity` (T-002), `intro` (T-003) tabs/fields.\n\nDo not duplicate Core Page HTL; rely on resource super type.",
+            "acceptance_criteria": [
+              "Given an author creates a press-release page, when the page renders, then it inherits Core Page rendering and `cq:Page` lifecycle behaviour.",
+              "Given the component definition, when inspected via CRXDE, then `sling:resourceSuperType` points at the current Core Page version on the archetype's classpath.",
+              "Given the page properties dialog, when opened, then it shows Core Page fields PLUS the project-specific fields added in T-002 and T-003."
+            ],
+            "dependencies": [],
+            "type": "feature",
+            "priority": "P0",
+            "labels": [
+              "agent-beads",
+              "aem",
+              "ui.apps",
+              "page-component"
+            ]
+          },
+          "result": {
+            "passed": false,
+            "issues": [
+              {
+                "rule": "specificity",
+                "severity": "blocker",
+                "message": "Path contains unresolved `{ARCHETYPE_DIR}` placeholder and ellipsis. Specify the concrete path (e.g., `ui.apps/src/main/content/jcr_root/apps/<appId>/components/page/press-release-page/`) so two engineers don't create the component in different locations."
+              },
+              {
+                "rule": "specificity",
+                "severity": "blocker",
+                "message": "`sling:resourceSuperType` value is ambiguous (\"v3\" OR \"current archetype-baseline\"). Pin a single version so the result is deterministic; if the version must be resolved, add a sub-step to determine it from the archetype POM/baseline."
+              },
+              {
+                "rule": "dependencies",
+                "severity": "blocker",
+                "message": "Description references T-002, T-003, T-004, T-006 as integration points but `dependencies` is empty. At minimum the dialog fields depend on T-002 and T-003 being defined; either declare those deps or restructure so T-005 ships only the proxy + empty dialog and later tasks add fields."
+              },
+              {
+                "rule": "acceptance_criteria",
+                "severity": "warning",
+                "message": "AC #3 requires fields from T-002/T-003 to be present, which contradicts empty dependencies. Either gate this AC behind those tasks or scope the dialog AC to the Core Page tabs + empty project tab shell."
+              },
+              {
+                "rule": "acceptance_criteria",
+                "severity": "warning",
+                "message": "No AC for `customheaderlibs.html` / `customfooterlibs.html` existence and no-op behavior, nor for absence of duplicated Core Page HTL. Add observable checks."
+              },
+              {
+                "rule": "atomicity",
+                "severity": "warning",
+                "message": "Bundling the dialog with project-specific fields couples this task to T-002/T-003. Consider splitting: (a) proxy + empty custom*libs + dialog inheriting Core, (b) field additions in their owning tasks."
+              }
+            ],
+            "suggested": {
+              "localId": "T-005",
+              "title": "Create press-release-page proxy component over Core Page v3",
+              "description": "Why: The press-release template (T-004) needs a `sling:resourceType` to render. Per AEM archetype convention, proxy Core Page via `sling:resourceSuperType` rather than fork its HTL.\n\nWhat: Under `ui.apps/src/main/content/jcr_root/apps/<appId>/components/page/press-release-page/` (replace `<appId>` with the archetype's configured app id, e.g. value of `${appId}` in the archetype POM), create:\n- `.content.xml` — `jcr:primaryType=\"cq:Component\"`, `componentGroup=\".hidden\"` (page components are hidden), `jcr:title=\"Press Release Page\"`, `sling:resourceSuperType=\"core/wcm/components/page/v3/page\"`. If the archetype baseline is on a newer Core Components version, update to that exact version and record the version in the commit message; do NOT use a floating reference.\n- `customheaderlibs.html` — empty file with a `<!-- extended by T-003 (meta) and T-006 (clientlibs) -->` comment placeholder.\n- `customfooterlibs.html` — empty file with a placeholder comment for site footer clientlibs.\n- `_cq_dialog/.content.xml` — dialog inheriting Core Page dialog via `sling:resourceSuperType`, with project-specific tabs left empty here. T-002 and T-003 add their fields into this dialog.\n\nDo NOT duplicate Core Page HTL; rely on resource super type.",
+              "acceptance_criteria": [
+                "Given an author creates a press-release page from the T-004 template, when the page renders, then it inherits Core Page v3 rendering and `cq:Page` lifecycle behaviour with no HTL duplicated under the new component.",
+                "Given the component node in CRXDE, when inspected, then `sling:resourceSuperType` equals exactly `core/wcm/components/page/v3/page` (or the pinned version recorded in the commit), and `componentGroup` is `.hidden`.",
+                "Given `customheaderlibs.html` and `customfooterlibs.html`, when the page renders without T-003/T-006 changes applied, then both files exist, are syntactically valid HTL, and emit no markup that breaks Core Page output.",
+                "Given the page properties dialog, when opened on a press-release page, then all Core Page tabs/fields are present (inherited via super type) and the project-specific tab shell exists ready for T-002/T-003 to add fields."
+              ],
+              "dependencies": [
+                "T-004"
+              ],
+              "type": "feature",
+              "priority": "P0",
+              "labels": [
+                "agent-beads",
+                "aem",
+                "ui.apps",
+                "page-component"
+              ]
+            },
+            "rationale": "The intent is sound and the size is appropriate, but the draft is not executable as written: the install path contains placeholders, the super-type version is left to the implementer, and the dialog acceptance criterion silently depends on T-002/T-003 while `dependencies` is empty. Fix the path, pin the version, and either declare the deps or narrow the scope to the proxy shell.",
+            "validator": "claude-cli"
+          }
+        },
+        {
+          "draft": {
+            "localId": "T-005",
+            "title": "Create press-release-page proxy component over Core Page v3",
+            "description": "Why: The press-release template (T-004) needs a `sling:resourceType` to render. Per AEM archetype convention, proxy Core Page via `sling:resourceSuperType` rather than fork its HTL.\n\nWhat: Under `ui.apps/src/main/content/jcr_root/apps/<appId>/components/page/press-release-page/` (replace `<appId>` with the archetype's configured app id, e.g. value of `${appId}` in the archetype POM), create:\n- `.content.xml` — `jcr:primaryType=\"cq:Component\"`, `componentGroup=\".hidden\"` (page components are hidden), `jcr:title=\"Press Release Page\"`, `sling:resourceSuperType=\"core/wcm/components/page/v3/page\"`. If the archetype baseline is on a newer Core Components version, update to that exact version and record the version in the commit message; do NOT use a floating reference.\n- `customheaderlibs.html` — empty file with a `<!-- extended by T-003 (meta) and T-006 (clientlibs) -->` comment placeholder.\n- `customfooterlibs.html` — empty file with a placeholder comment for site footer clientlibs.\n- `_cq_dialog/.content.xml` — dialog inheriting Core Page dialog via `sling:resourceSuperType`, with project-specific tabs left empty here. T-002 and T-003 add their fields into this dialog.\n\nDo NOT duplicate Core Page HTL; rely on resource super type.",
+            "acceptance_criteria": [
+              "Given an author creates a press-release page from the T-004 template, when the page renders, then it inherits Core Page v3 rendering and `cq:Page` lifecycle behaviour with no HTL duplicated under the new component.",
+              "Given the component node in CRXDE, when inspected, then `sling:resourceSuperType` equals exactly `core/wcm/components/page/v3/page` (or the pinned version recorded in the commit), and `componentGroup` is `.hidden`.",
+              "Given `customheaderlibs.html` and `customfooterlibs.html`, when the page renders without T-003/T-006 changes applied, then both files exist, are syntactically valid HTL, and emit no markup that breaks Core Page output.",
+              "Given the page properties dialog, when opened on a press-release page, then all Core Page tabs/fields are present (inherited via super type) and the project-specific tab shell exists ready for T-002/T-003 to add fields."
+            ],
+            "dependencies": [
+              "T-004"
+            ],
+            "type": "feature",
+            "priority": "P0",
+            "labels": [
+              "agent-beads",
+              "aem",
+              "ui.apps",
+              "page-component"
+            ]
+          },
+          "result": {
+            "passed": true,
+            "issues": [
+              {
+                "rule": "specificity",
+                "severity": "warning",
+                "message": "AC #4 references a 'project-specific tab shell' but the description says project-specific tabs are 'left empty here'. Clarify whether T-005 creates an empty tab node (e.g., a named cq:Panel ready for fields) or omits the tab entirely and lets T-002/T-003 introduce it. Either is fine, but pick one to avoid divergent implementations."
+              },
+              {
+                "rule": "specificity",
+                "severity": "warning",
+                "message": "`<appId>` is described but not resolved. Consider running the lookup (grep `appId` in the archetype POM) once and recording the literal value in the task to remove the per-engineer resolution step."
+              },
+              {
+                "rule": "specificity",
+                "severity": "warning",
+                "message": "The Core Components version clause still allows 'or pinned newer version'. For full determinism, do the baseline check up front and hardcode the exact coordinate (e.g., `core/wcm/components/page/v3/page`) in the task; drop the conditional."
+              }
+            ],
+            "rationale": "Draft now satisfies all blocker rules: path is concrete, super type is pinned to a specific value with a deterministic override path, scope is atomic (proxy + empty custom*libs + dialog inheriting Core, with field additions correctly deferred to T-002/T-003), dependencies match scope (only T-004), and ACs cover inheritance, exact super-type value, custom*libs no-op behavior, and dialog inheritance without requiring fields from later tasks. Remaining items are minor specificity polish, not blockers.",
+            "validator": "claude-cli"
+          }
+        }
+      ]
+    },
+    {
+      "localId": "T-006",
+      "title": "Declare Newsroom site clientlib category and wire it into the press-release page component",
+      "iterations": 1,
+      "passed": true,
+      "finalDraft": {
+        "localId": "T-006",
+        "title": "Declare Newsroom site clientlib category and wire it into the press-release page component",
+        "description": "Why: Section 8 calls for a Newsroom theme bundle (`<site>.newsroom`) loaded by the press-release template's page policy. SCSS/JS authored in T-019 and T-020 land in this clientlib.\n\nWhat: Create `aem-project-archetype/{ARCHETYPE_DIR}/ui.apps/.../clientlibs/clientlib-newsroom/` with:\n- `.content.xml` declaring `categories=[\"<site>.newsroom\"]` and dependencies on the base site clientlib.\n- Empty `css.txt` and `js.txt` manifests (populated by T-019/T-020).\n- `css/` and `js/` source folders.\n\nWire the category into the press-release page component's `customheaderlibs.html` and `customfooterlibs.html` so it loads on every press-release page (or, alternatively, register it via page policy in T-018 — pick one approach and stick with it).",
+        "acceptance_criteria": [
+          "Given a published press-release page, when the HTML is fetched, then a `<link rel=\"stylesheet\">` for the Newsroom clientlib appears in `<head>` and `<script>` for it appears before `</body>` (or per archetype loading convention).",
+          "Given the clientlib node, when inspected via CRXDE, then `categories` contains `<site>.newsroom`.",
+          "Given another non-press-release page, when rendered, then the Newsroom clientlib does NOT load."
+        ],
+        "dependencies": [
+          "T-005"
+        ],
+        "type": "task",
+        "priority": "P2",
+        "labels": [
+          "agent-beads",
+          "aem",
+          "ui.apps",
+          "clientlibs"
+        ]
+      },
+      "history": [
+        {
+          "draft": {
+            "localId": "T-006",
+            "title": "Declare Newsroom site clientlib category and wire it into the press-release page component",
+            "description": "Why: Section 8 calls for a Newsroom theme bundle (`<site>.newsroom`) loaded by the press-release template's page policy. SCSS/JS authored in T-019 and T-020 land in this clientlib.\n\nWhat: Create `aem-project-archetype/{ARCHETYPE_DIR}/ui.apps/.../clientlibs/clientlib-newsroom/` with:\n- `.content.xml` declaring `categories=[\"<site>.newsroom\"]` and dependencies on the base site clientlib.\n- Empty `css.txt` and `js.txt` manifests (populated by T-019/T-020).\n- `css/` and `js/` source folders.\n\nWire the category into the press-release page component's `customheaderlibs.html` and `customfooterlibs.html` so it loads on every press-release page (or, alternatively, register it via page policy in T-018 — pick one approach and stick with it).",
+            "acceptance_criteria": [
+              "Given a published press-release page, when the HTML is fetched, then a `<link rel=\"stylesheet\">` for the Newsroom clientlib appears in `<head>` and `<script>` for it appears before `</body>` (or per archetype loading convention).",
+              "Given the clientlib node, when inspected via CRXDE, then `categories` contains `<site>.newsroom`.",
+              "Given another non-press-release page, when rendered, then the Newsroom clientlib does NOT load."
+            ],
+            "dependencies": [
+              "T-005"
+            ],
+            "type": "task",
+            "priority": "P2",
+            "labels": [
+              "agent-beads",
+              "aem",
+              "ui.apps",
+              "clientlibs"
+            ]
+          },
+          "result": {
+            "passed": true,
+            "issues": [
+              {
+                "rule": "specificity",
+                "severity": "warning",
+                "message": "Placeholders `<site>` and `{ARCHETYPE_DIR}` remain unresolved — confirm they are substituted at generation time, otherwise pin concrete values."
+              },
+              {
+                "rule": "clarity",
+                "severity": "warning",
+                "message": "Description offers two wiring approaches (customheaderlibs/customfooterlibs vs. page policy in T-018). Pick one definitively to avoid divergent implementations; acceptance criteria already imply the component-include path."
+              }
+            ],
+            "rationale": "Task is atomic, sized for a single sitting, has a real upstream dependency (T-005) and clear downstream consumers (T-019/T-020). Acceptance criteria are concrete and observable (HTML inspection, CRXDE node check, negative test on non-press-release pages). Minor warnings around unresolved placeholders and the optional alternative wiring approach, but neither blocks execution.",
+            "validator": "claude-cli"
+          }
+        }
+      ]
+    },
+    {
+      "localId": "T-007",
+      "title": "Add editable body Layout Container to press-release template structure",
+      "iterations": 1,
+      "passed": true,
+      "finalDraft": {
+        "localId": "T-007",
+        "title": "Add editable body Layout Container to press-release template structure",
+        "description": "Why: Region 4 (article body) is the one editable region on the page. The template structure must include a Layout Container with an allowed-components policy that constrains authors to the disciplined palette specified in the plan.\n\nWhat: In the `press-release-page` template structure (T-004), add a `responsivegrid` (Layout Container) node positioned below the Article Header group and above the Related Posts region. Mark it editable (unlocked). The actual policy (allowed components, RTE features) is wired in T-018; this ticket covers the structural placement only.",
+        "acceptance_criteria": [
+          "Given the template structure tree, when inspected, then a Layout Container node exists between Article Header and Related Posts.",
+          "Given an author opens a page from this template, when they click the body region, then it shows as editable (not locked).",
+          "Given the Layout Container is empty, when the page renders, then no errors occur and an empty placeholder is shown to authors."
+        ],
+        "dependencies": [
+          "T-004"
+        ],
+        "type": "task",
+        "priority": "P1",
+        "labels": [
+          "agent-beads",
+          "aem",
+          "ui.content",
+          "templates",
+          "layout-container"
+        ]
+      },
+      "history": [
+        {
+          "draft": {
+            "localId": "T-007",
+            "title": "Add editable body Layout Container to press-release template structure",
+            "description": "Why: Region 4 (article body) is the one editable region on the page. The template structure must include a Layout Container with an allowed-components policy that constrains authors to the disciplined palette specified in the plan.\n\nWhat: In the `press-release-page` template structure (T-004), add a `responsivegrid` (Layout Container) node positioned below the Article Header group and above the Related Posts region. Mark it editable (unlocked). The actual policy (allowed components, RTE features) is wired in T-018; this ticket covers the structural placement only.",
+            "acceptance_criteria": [
+              "Given the template structure tree, when inspected, then a Layout Container node exists between Article Header and Related Posts.",
+              "Given an author opens a page from this template, when they click the body region, then it shows as editable (not locked).",
+              "Given the Layout Container is empty, when the page renders, then no errors occur and an empty placeholder is shown to authors."
+            ],
+            "dependencies": [
+              "T-004"
+            ],
+            "type": "task",
+            "priority": "P1",
+            "labels": [
+              "agent-beads",
+              "aem",
+              "ui.content",
+              "templates",
+              "layout-container"
+            ]
+          },
+          "result": {
+            "passed": true,
+            "issues": [
+              {
+                "rule": "dependencies",
+                "severity": "warning",
+                "message": "Note that policy wiring (allowed components, RTE features) is deferred to T-018 — ensure that linkage is tracked so this structural placement isn't shipped without its policy."
+              }
+            ],
+            "rationale": "Task is clear, atomic, and properly scoped to structural placement only. Acceptance criteria are concrete and testable (tree inspection, editability check, empty-render check). Dependency on T-004 is real and stated. Size is well under a day. Scope boundary vs T-018 is explicit.",
+            "validator": "claude-cli"
+          }
+        }
+      ]
+    },
+    {
+      "localId": "T-008",
+      "title": "Build Article Meta HTL partial that renders releaseDate as \"Published on …\"",
+      "iterations": 2,
+      "passed": true,
+      "finalDraft": {
+        "localId": "T-008",
+        "title": "Build Article Meta HTL partial that renders releaseDate as \"Published on …\"",
+        "description": "Why: Region 3 needs a small partial that formats the typed `releaseDate` page property into the human string seen in the source (\"Published on 14th April 2026 at 9:03\"). Date formatting belongs in a Sling Model + HTL partial, not inline in the template.\n\nWhat:\n1. Add a Sling Model `com.<group>.core.models.ArticleMetaModel` under `aem-project-archetype/{ARCHETYPE_DIR}/core/src/main/java/...` that injects `releaseDate` (java.util.Calendar) from the current page and exposes `getFormattedReleaseDate()` returning `Published on Dth MMMM yyyy at H:mm` in the page's configured timezone, with ordinal day suffix (1st, 2nd, 3rd, 4th…11th…21st…). Use 24h time, no leading zero on hour (H:mm).\n2. Add an HTL partial under `aem-project-archetype/{ARCHETYPE_DIR}/ui.apps/src/main/content/jcr_root/apps/<app>/components/content/articlemeta/articlemeta.html` that uses the model and renders a single line. Render nothing when releaseDate is missing.\n3. Source the literal \"Published on\" and the \"at\" connector from the i18n bundle delivered by T-021 (key e.g. `articlemeta.publishedOn`).\n4. Place the partial inside the Article Header group delivered by T-011.\n\nEdge cases: missing `releaseDate` renders nothing (no orphan \"Published on\"). Ordinals must follow English rules (11th/12th/13th are 'th', not 'st/nd/rd').",
+        "acceptance_criteria": [
+          "Given `releaseDate=2026-04-14T09:03:00` in the page's timezone (Australia/Sydney), when the page renders, then the meta line shows \"Published on 14th April 2026 at 9:03\".",
+          "Given `releaseDate` is null/absent, when the page renders, then the articlemeta partial emits no markup (no empty \"Published on\" prefix).",
+          "Given a unit test for `ArticleMetaModel.getFormattedReleaseDate()`, when run with day ∈ {1,2,3,4,11,12,13,21,22,23,31}, then the ordinal suffixes are {1st,2nd,3rd,4th,11th,12th,13th,21st,22nd,23rd,31st}.",
+          "Given the i18n bundle from T-021 provides the `articlemeta.publishedOn` key, when the page renders in the default locale, then the prefix \"Published on\" is sourced from i18n (verified by switching locale changes the prefix).",
+          "Given the partial is dropped into the Article Header group (T-011), when the page is authored, then it appears within that group and not as a standalone region."
+        ],
+        "dependencies": [
+          "T-002",
+          "T-011",
+          "T-021"
+        ],
+        "type": "feature",
+        "priority": "P1",
+        "labels": [
+          "agent-beads",
+          "aem",
+          "core",
+          "ui.apps",
+          "sling-model",
+          "htl",
+          "i18n"
+        ]
+      },
+      "history": [
+        {
+          "draft": {
+            "localId": "T-008",
+            "title": "Build Article Meta HTL partial that renders releaseDate as \"Published on …\"",
+            "description": "Why: Region 3 needs a small partial that formats the typed `releaseDate` page property into the human string seen in the source (\"Published on 14th April 2026 at 9:03\"). Date formatting belongs in a Sling Model + HTL partial, not inline in the template.\n\nWhat:\n1. Add a Sling Model (e.g., `core/.../models/ArticleMetaModel.java`) under `aem-project-archetype/{ARCHETYPE_DIR}/core/` that injects `releaseDate` from the current page and exposes `getFormattedReleaseDate()` returning `Published on Dth MMMM yyyy at H:mm` (with ordinal day suffix: 1st, 2nd, 3rd, 14th).\n2. Add an HTL partial under `aem-project-archetype/{ARCHETYPE_DIR}/ui.apps/.../components/content/articlemeta/` that uses the model and renders a single line.\n3. Place the partial inside the Article Header group (T-011).\n\nEdge cases: missing `releaseDate` must render nothing (no \"Published on\" prefix). i18n: \"Published on\" must come from the i18n bundle (T-021).",
+            "acceptance_criteria": [
+              "Given `releaseDate=2026-04-14T09:03:00` (Australia/Sydney), when the page renders, then the meta line shows \"Published on 14th April 2026 at 9:03\".",
+              "Given `releaseDate` is null, when the page renders, then the article meta partial emits nothing (no empty \"Published on\" string).",
+              "Given a unit test for `ArticleMetaModel.getFormattedReleaseDate()`, when run with day=1, 2, 3, 11, 21, 22, 23, then the ordinal suffix is correct (1st, 2nd, 3rd, 11th, 21st, 22nd, 23rd)."
+            ],
+            "dependencies": [
+              "T-002"
+            ],
+            "type": "feature",
+            "priority": "P1",
+            "labels": [
+              "agent-beads",
+              "aem",
+              "core",
+              "ui.apps",
+              "sling-model",
+              "htl"
+            ]
+          },
+          "result": {
+            "passed": false,
+            "issues": [
+              {
+                "rule": "dependencies",
+                "severity": "blocker",
+                "message": "Description references T-011 (Article Header group) and T-021 (i18n bundle) as required, but neither is listed in dependencies. Either add them or remove the references."
+              },
+              {
+                "rule": "acceptance_criteria",
+                "severity": "warning",
+                "message": "Add an explicit i18n acceptance criterion (e.g., 'Published on' is resolved via i18n bundle key, not hardcoded) since the description mandates it."
+              },
+              {
+                "rule": "specificity",
+                "severity": "warning",
+                "message": "`{ARCHETYPE_DIR}` placeholder and `core/.../models/` ellipses leave the exact package/path unspecified. Pin the concrete path or state the convention to follow."
+              },
+              {
+                "rule": "acceptance_criteria",
+                "severity": "warning",
+                "message": "Time format ambiguous: '9:03' implies no leading zero (H:mm) but example uses 09:03 input — confirm whether 24h vs 12h and AM/PM are required."
+              }
+            ],
+            "suggested": {
+              "localId": "T-008",
+              "title": "Build Article Meta HTL partial that renders releaseDate as \"Published on …\"",
+              "description": "Why: Region 3 needs a small partial that formats the typed `releaseDate` page property into the human string seen in the source (\"Published on 14th April 2026 at 9:03\"). Date formatting belongs in a Sling Model + HTL partial, not inline in the template.\n\nWhat:\n1. Add a Sling Model `com.<group>.core.models.ArticleMetaModel` under `aem-project-archetype/{ARCHETYPE_DIR}/core/src/main/java/...` that injects `releaseDate` (java.util.Calendar) from the current page and exposes `getFormattedReleaseDate()` returning `Published on Dth MMMM yyyy at H:mm` in the page's configured timezone, with ordinal day suffix (1st, 2nd, 3rd, 4th…11th…21st…). Use 24h time, no leading zero on hour (H:mm).\n2. Add an HTL partial under `aem-project-archetype/{ARCHETYPE_DIR}/ui.apps/src/main/content/jcr_root/apps/<app>/components/content/articlemeta/articlemeta.html` that uses the model and renders a single line. Render nothing when releaseDate is missing.\n3. Source the literal \"Published on\" and the \"at\" connector from the i18n bundle delivered by T-021 (key e.g. `articlemeta.publishedOn`).\n4. Place the partial inside the Article Header group delivered by T-011.\n\nEdge cases: missing `releaseDate` renders nothing (no orphan \"Published on\"). Ordinals must follow English rules (11th/12th/13th are 'th', not 'st/nd/rd').",
+              "acceptance_criteria": [
+                "Given `releaseDate=2026-04-14T09:03:00` in the page's timezone (Australia/Sydney), when the page renders, then the meta line shows \"Published on 14th April 2026 at 9:03\".",
+                "Given `releaseDate` is null/absent, when the page renders, then the articlemeta partial emits no markup (no empty \"Published on\" prefix).",
+                "Given a unit test for `ArticleMetaModel.getFormattedReleaseDate()`, when run with day ∈ {1,2,3,4,11,12,13,21,22,23,31}, then the ordinal suffixes are {1st,2nd,3rd,4th,11th,12th,13th,21st,22nd,23rd,31st}.",
+                "Given the i18n bundle from T-021 provides the `articlemeta.publishedOn` key, when the page renders in the default locale, then the prefix \"Published on\" is sourced from i18n (verified by switching locale changes the prefix).",
+                "Given the partial is dropped into the Article Header group (T-011), when the page is authored, then it appears within that group and not as a standalone region."
+              ],
+              "dependencies": [
+                "T-002",
+                "T-011",
+                "T-021"
+              ],
+              "type": "feature",
+              "priority": "P1",
+              "labels": [
+                "agent-beads",
+                "aem",
+                "core",
+                "ui.apps",
+                "sling-model",
+                "htl",
+                "i18n"
+              ]
+            },
+            "rationale": "Blocks on missing dependencies: the description explicitly conditions the work on T-011 and T-021, but the dependencies array only lists T-002. That breaks the dependency graph. Otherwise the task is appropriately scoped, testable, and feasible; minor specificity and i18n-criterion gaps are warnings.",
+            "validator": "claude-cli"
+          }
+        },
+        {
+          "draft": {
+            "localId": "T-008",
+            "title": "Build Article Meta HTL partial that renders releaseDate as \"Published on …\"",
+            "description": "Why: Region 3 needs a small partial that formats the typed `releaseDate` page property into the human string seen in the source (\"Published on 14th April 2026 at 9:03\"). Date formatting belongs in a Sling Model + HTL partial, not inline in the template.\n\nWhat:\n1. Add a Sling Model `com.<group>.core.models.ArticleMetaModel` under `aem-project-archetype/{ARCHETYPE_DIR}/core/src/main/java/...` that injects `releaseDate` (java.util.Calendar) from the current page and exposes `getFormattedReleaseDate()` returning `Published on Dth MMMM yyyy at H:mm` in the page's configured timezone, with ordinal day suffix (1st, 2nd, 3rd, 4th…11th…21st…). Use 24h time, no leading zero on hour (H:mm).\n2. Add an HTL partial under `aem-project-archetype/{ARCHETYPE_DIR}/ui.apps/src/main/content/jcr_root/apps/<app>/components/content/articlemeta/articlemeta.html` that uses the model and renders a single line. Render nothing when releaseDate is missing.\n3. Source the literal \"Published on\" and the \"at\" connector from the i18n bundle delivered by T-021 (key e.g. `articlemeta.publishedOn`).\n4. Place the partial inside the Article Header group delivered by T-011.\n\nEdge cases: missing `releaseDate` renders nothing (no orphan \"Published on\"). Ordinals must follow English rules (11th/12th/13th are 'th', not 'st/nd/rd').",
+            "acceptance_criteria": [
+              "Given `releaseDate=2026-04-14T09:03:00` in the page's timezone (Australia/Sydney), when the page renders, then the meta line shows \"Published on 14th April 2026 at 9:03\".",
+              "Given `releaseDate` is null/absent, when the page renders, then the articlemeta partial emits no markup (no empty \"Published on\" prefix).",
+              "Given a unit test for `ArticleMetaModel.getFormattedReleaseDate()`, when run with day ∈ {1,2,3,4,11,12,13,21,22,23,31}, then the ordinal suffixes are {1st,2nd,3rd,4th,11th,12th,13th,21st,22nd,23rd,31st}.",
+              "Given the i18n bundle from T-021 provides the `articlemeta.publishedOn` key, when the page renders in the default locale, then the prefix \"Published on\" is sourced from i18n (verified by switching locale changes the prefix).",
+              "Given the partial is dropped into the Article Header group (T-011), when the page is authored, then it appears within that group and not as a standalone region."
+            ],
+            "dependencies": [
+              "T-002",
+              "T-011",
+              "T-021"
+            ],
+            "type": "feature",
+            "priority": "P1",
+            "labels": [
+              "agent-beads",
+              "aem",
+              "core",
+              "ui.apps",
+              "sling-model",
+              "htl",
+              "i18n"
+            ]
+          },
+          "result": {
+            "passed": true,
+            "issues": [
+              {
+                "rule": "specificity",
+                "severity": "warning",
+                "message": "`{ARCHETYPE_DIR}` and `<app>`/`<group>` placeholders remain. Acceptable if the project's archetype substitution convention is documented elsewhere; otherwise pin concrete values before implementation starts."
+              },
+              {
+                "rule": "dependencies",
+                "severity": "warning",
+                "message": "T-002 is listed but its role isn't explained in the description (presumably the archetype/core module scaffolding). Consider a one-line note tying it in."
+              }
+            ],
+            "rationale": "Draft addresses all prior blockers: T-011 and T-021 are now in dependencies, an explicit i18n acceptance criterion was added, and the time format is disambiguated to 24h H:mm with a concrete example. Acceptance criteria are concrete and testable (timezone, null case, ordinal table, i18n locale switch, group placement). Scope is atomic (one Sling Model + one HTL partial) and finishable in one sitting. Remaining placeholders are minor and conventional for archetype-based AEM projects.",
+            "validator": "claude-cli"
+          }
+        }
+      ]
+    },
+    {
+      "localId": "T-009",
+      "title": "Render `intro` page property as the first Core Text in article body",
+      "iterations": 1,
+      "passed": true,
+      "finalDraft": {
+        "localId": "T-009",
+        "title": "Render `intro` page property as the first Core Text in article body",
+        "description": "Why: Decision #12 requires the `intro` field to render both into meta tags (T-003) AND as the first paragraph of the article body, so authors edit once.\n\nWhat: Add an HTL snippet (or extend the page component's body rendering) that emits the `intro` rich text as the first content block inside the body Layout Container. This should be a template-locked element OR a synthesized resource that authors do NOT edit inline (they edit it via page properties).\n\nImplementation options (pick one and document):\n- A) Synthesize a Core Text resource at request time using the `intro` value, rendered via Sling resource wrapper.\n- B) Lock a Core Text node in the template `initial/` content whose value is computed from `intro` via a Sling Model.\n- C) Emit a plain HTL block before the Layout Container that styles like Core Text output.\n\nEdge cases: empty `intro` must emit nothing. Rich-text formatting must be preserved (paragraphs, links, emphasis).",
+        "acceptance_criteria": [
+          "Given `intro` set to \"Qantas Group today provided a market update.\", when the press-release page renders, then the first paragraph in the body region contains exactly that text.",
+          "Given an author edits `intro` in page properties, when the page is reloaded, then both the `<meta>` tags and the first body paragraph reflect the new value.",
+          "Given `intro` is empty, when the body renders, then no empty paragraph or whitespace artefact appears before the first authored content."
+        ],
+        "dependencies": [
+          "T-003",
+          "T-007"
+        ],
+        "type": "task",
+        "priority": "P1",
+        "labels": [
+          "agent-beads",
+          "aem",
+          "ui.apps",
+          "htl",
+          "page-property-binding"
+        ]
+      },
+      "history": [
+        {
+          "draft": {
+            "localId": "T-009",
+            "title": "Render `intro` page property as the first Core Text in article body",
+            "description": "Why: Decision #12 requires the `intro` field to render both into meta tags (T-003) AND as the first paragraph of the article body, so authors edit once.\n\nWhat: Add an HTL snippet (or extend the page component's body rendering) that emits the `intro` rich text as the first content block inside the body Layout Container. This should be a template-locked element OR a synthesized resource that authors do NOT edit inline (they edit it via page properties).\n\nImplementation options (pick one and document):\n- A) Synthesize a Core Text resource at request time using the `intro` value, rendered via Sling resource wrapper.\n- B) Lock a Core Text node in the template `initial/` content whose value is computed from `intro` via a Sling Model.\n- C) Emit a plain HTL block before the Layout Container that styles like Core Text output.\n\nEdge cases: empty `intro` must emit nothing. Rich-text formatting must be preserved (paragraphs, links, emphasis).",
+            "acceptance_criteria": [
+              "Given `intro` set to \"Qantas Group today provided a market update.\", when the press-release page renders, then the first paragraph in the body region contains exactly that text.",
+              "Given an author edits `intro` in page properties, when the page is reloaded, then both the `<meta>` tags and the first body paragraph reflect the new value.",
+              "Given `intro` is empty, when the body renders, then no empty paragraph or whitespace artefact appears before the first authored content."
+            ],
+            "dependencies": [
+              "T-003",
+              "T-007"
+            ],
+            "type": "task",
+            "priority": "P1",
+            "labels": [
+              "agent-beads",
+              "aem",
+              "ui.apps",
+              "htl",
+              "page-property-binding"
+            ]
+          },
+          "result": {
+            "passed": true,
+            "issues": [
+              {
+                "rule": "specificity",
+                "severity": "warning",
+                "message": "Three implementation options are listed but none is selected; pick one before starting to avoid divergent approaches."
+              },
+              {
+                "rule": "acceptance_criteria",
+                "severity": "warning",
+                "message": "Add a criterion verifying rich-text formatting (paragraphs, links, emphasis) is preserved end-to-end, since it's called out as an edge case."
+              },
+              {
+                "rule": "dependencies",
+                "severity": "warning",
+                "message": "Confirm T-007 is the Layout Container/template task; if not, the dependency may be incorrect."
+              }
+            ],
+            "rationale": "Task is clear, atomic, feasible, and well-sized for a single sitting. Acceptance criteria are concrete and testable (Given/When/Then), dependencies on T-003 (meta tags) and T-007 are stated, and the scope is bounded to rendering `intro` once into the body. Implementation-option ambiguity and a missing rich-text-preservation AC are warnings, not blockers.",
+            "validator": "claude-cli"
+          }
+        }
+      ]
+    },
+    {
+      "localId": "T-010",
+      "title": "Build Social Share sub-component (Facebook + Twitter/X anchor links + Print button)",
+      "iterations": 1,
+      "passed": true,
+      "finalDraft": {
+        "localId": "T-010",
+        "title": "Build Social Share sub-component (Facebook + Twitter/X anchor links + Print button)",
+        "description": "Why: Decision #11 — implement share via accessible anchor-based share links, NOT vendor SDK iframes. Decision #9 — Print is a `<button>` with `window.print()` handler. The component lives in the Article Header group (Region 3) and is shared default across all press releases.\n\nWhat: Create `aem-project-archetype/{ARCHETYPE_DIR}/ui.apps/.../components/content/socialshare/` with:\n- `.content.xml` registering as a content component.\n- `cq:dialog` allowing override of share URL (default = canonical), enabled networks (Facebook on/off, Twitter on/off — policy-level), and print button label.\n- `socialshare.html` rendering: `<a href=\"https://www.facebook.com/sharer/sharer.php?u=<canonical>\" target=\"_blank\" rel=\"noopener\" aria-label=\"Share on Facebook\">…</a>`, equivalent for Twitter (`https://twitter.com/intent/tweet?url=<canonical>`), and `<button type=\"button\" class=\"print-friendly-version\" data-print-trigger>Print Friendly Version</button>`.\n- A small Sling Model to compute the canonical URL (from page properties `og:url` / page path).\n\nThe Print button's `window.print()` JS handler is added in T-020 (clientlib JS). Icon assets and styling are in T-019 (SCSS).\n\nEdge cases: `target=\"_blank\"` must include `rel=\"noopener noreferrer\"`. All controls need accessible labels (`aria-label` or visible text). Print button must work without JS (graceful degradation: still triggers browser print via fallback or simply does nothing — pick one and document).",
+        "acceptance_criteria": [
+          "Given a published press-release page at `https://qantasnewsroom.com.au/.../april-2026`, when the rendered HTML is inspected, then the Facebook anchor `href` contains `sharer.php?u=` followed by the URL-encoded canonical URL.",
+          "Given the rendered Twitter anchor, when inspected, then the `href` matches `https://twitter.com/intent/tweet?url=<encoded-canonical>` and the link opens in a new tab with `rel=\"noopener noreferrer\"`.",
+          "Given the rendered Print button, when inspected, then it is a `<button type=\"button\">` (NOT an anchor) with an accessible label and a `data-print-trigger` (or equivalent) hook for the JS handler.",
+          "Given an a11y scan, when run on the Article Header, then the share row passes axe-core's name-from-content / aria-label rules."
+        ],
+        "dependencies": [
+          "T-005"
+        ],
+        "type": "feature",
+        "priority": "P1",
+        "labels": [
+          "agent-beads",
+          "aem",
+          "ui.apps",
+          "component",
+          "a11y"
+        ]
+      },
+      "history": [
+        {
+          "draft": {
+            "localId": "T-010",
+            "title": "Build Social Share sub-component (Facebook + Twitter/X anchor links + Print button)",
+            "description": "Why: Decision #11 — implement share via accessible anchor-based share links, NOT vendor SDK iframes. Decision #9 — Print is a `<button>` with `window.print()` handler. The component lives in the Article Header group (Region 3) and is shared default across all press releases.\n\nWhat: Create `aem-project-archetype/{ARCHETYPE_DIR}/ui.apps/.../components/content/socialshare/` with:\n- `.content.xml` registering as a content component.\n- `cq:dialog` allowing override of share URL (default = canonical), enabled networks (Facebook on/off, Twitter on/off — policy-level), and print button label.\n- `socialshare.html` rendering: `<a href=\"https://www.facebook.com/sharer/sharer.php?u=<canonical>\" target=\"_blank\" rel=\"noopener\" aria-label=\"Share on Facebook\">…</a>`, equivalent for Twitter (`https://twitter.com/intent/tweet?url=<canonical>`), and `<button type=\"button\" class=\"print-friendly-version\" data-print-trigger>Print Friendly Version</button>`.\n- A small Sling Model to compute the canonical URL (from page properties `og:url` / page path).\n\nThe Print button's `window.print()` JS handler is added in T-020 (clientlib JS). Icon assets and styling are in T-019 (SCSS).\n\nEdge cases: `target=\"_blank\"` must include `rel=\"noopener noreferrer\"`. All controls need accessible labels (`aria-label` or visible text). Print button must work without JS (graceful degradation: still triggers browser print via fallback or simply does nothing — pick one and document).",
+            "acceptance_criteria": [
+              "Given a published press-release page at `https://qantasnewsroom.com.au/.../april-2026`, when the rendered HTML is inspected, then the Facebook anchor `href` contains `sharer.php?u=` followed by the URL-encoded canonical URL.",
+              "Given the rendered Twitter anchor, when inspected, then the `href` matches `https://twitter.com/intent/tweet?url=<encoded-canonical>` and the link opens in a new tab with `rel=\"noopener noreferrer\"`.",
+              "Given the rendered Print button, when inspected, then it is a `<button type=\"button\">` (NOT an anchor) with an accessible label and a `data-print-trigger` (or equivalent) hook for the JS handler.",
+              "Given an a11y scan, when run on the Article Header, then the share row passes axe-core's name-from-content / aria-label rules."
+            ],
+            "dependencies": [
+              "T-005"
+            ],
+            "type": "feature",
+            "priority": "P1",
+            "labels": [
+              "agent-beads",
+              "aem",
+              "ui.apps",
+              "component",
+              "a11y"
+            ]
+          },
+          "result": {
+            "passed": true,
+            "issues": [
+              {
+                "rule": "specificity",
+                "severity": "warning",
+                "message": "Path contains placeholder `{ARCHETYPE_DIR}` — resolve to the actual archetype module name before implementation to avoid ambiguity."
+              },
+              {
+                "rule": "acceptance_criteria",
+                "severity": "warning",
+                "message": "The 'graceful degradation without JS' choice is mentioned as 'pick one and document' but not pinned in acceptance criteria; consider adding an AC asserting the documented behavior."
+              },
+              {
+                "rule": "dependencies",
+                "severity": "warning",
+                "message": "T-019 (SCSS) and T-020 (print JS handler) are referenced as related work but not listed as dependencies — confirm T-010 can be completed and verified independently (HTML/model only) without them."
+              }
+            ],
+            "rationale": "Task is clear, atomic, and feasible: it scopes a single AEM component (HTML, dialog, Sling Model) with concrete share URL formats, accessibility requirements, and testable acceptance criteria tied to Decisions #9 and #11. Size fits one sitting. Dependency on T-005 is stated, and JS/SCSS are correctly deferred to T-019/T-020. Minor warnings (unresolved archetype path placeholder, no-JS fallback policy, and explicit non-blocking relationship to T-019/T-020) do not block acceptance.",
+            "validator": "claude-cli"
+          }
+        }
+      ]
+    },
+    {
+      "localId": "T-011",
+      "title": "Wire Article Header group (Core Title + Article Meta + Social Share) into template structure",
+      "iterations": 1,
+      "passed": true,
+      "finalDraft": {
+        "localId": "T-011",
+        "title": "Wire Article Header group (Core Title + Article Meta + Social Share) into template structure",
+        "description": "Why: Region 3 is a template-locked composite. The three sub-components must be placed in a fixed order at the top of the main content column.\n\nWhat: In the press-release template structure (T-004), add a locked container/group node holding, in order:\n1. Core Title — value sourced from `jcr:title` (page title), heading level H1.\n2. Article Meta partial (`articlemeta` from T-008).\n3. Social Share component (`socialshare` from T-010).\n\nMark the group locked so authors cannot remove or reorder it. Configure the Core Title to read `jcr:title` automatically (linkDisabled, type=h1).\n\nEdge cases: the Core Title's policy should hide author-facing fields that would let an author override the title independently of page properties.",
+        "acceptance_criteria": [
+          "Given an author creates a page titled \"QANTAS GROUP MARKET UPDATE – APRIL 2026\", when the page renders, then an `<h1>` containing that title appears at the top of the content column.",
+          "Given the rendered Article Header group, when inspected, then the order is exactly: title → article meta line → social share row.",
+          "Given an author tries to remove or reorder components in the Article Header group, when they interact via the editor, then the components are locked and cannot be removed/reordered."
+        ],
+        "dependencies": [
+          "T-004",
+          "T-008",
+          "T-010"
+        ],
+        "type": "task",
+        "priority": "P1",
+        "labels": [
+          "agent-beads",
+          "aem",
+          "ui.content",
+          "templates"
+        ]
+      },
+      "history": [
+        {
+          "draft": {
+            "localId": "T-011",
+            "title": "Wire Article Header group (Core Title + Article Meta + Social Share) into template structure",
+            "description": "Why: Region 3 is a template-locked composite. The three sub-components must be placed in a fixed order at the top of the main content column.\n\nWhat: In the press-release template structure (T-004), add a locked container/group node holding, in order:\n1. Core Title — value sourced from `jcr:title` (page title), heading level H1.\n2. Article Meta partial (`articlemeta` from T-008).\n3. Social Share component (`socialshare` from T-010).\n\nMark the group locked so authors cannot remove or reorder it. Configure the Core Title to read `jcr:title` automatically (linkDisabled, type=h1).\n\nEdge cases: the Core Title's policy should hide author-facing fields that would let an author override the title independently of page properties.",
+            "acceptance_criteria": [
+              "Given an author creates a page titled \"QANTAS GROUP MARKET UPDATE – APRIL 2026\", when the page renders, then an `<h1>` containing that title appears at the top of the content column.",
+              "Given the rendered Article Header group, when inspected, then the order is exactly: title → article meta line → social share row.",
+              "Given an author tries to remove or reorder components in the Article Header group, when they interact via the editor, then the components are locked and cannot be removed/reordered."
+            ],
+            "dependencies": [
+              "T-004",
+              "T-008",
+              "T-010"
+            ],
+            "type": "task",
+            "priority": "P1",
+            "labels": [
+              "agent-beads",
+              "aem",
+              "ui.content",
+              "templates"
+            ]
+          },
+          "result": {
+            "passed": true,
+            "issues": [],
+            "rationale": "Task is clear, atomic, and well-scoped: wire three named sub-components into a locked group within the existing template (T-004), with explicit ordering, source bindings, and lock semantics. Acceptance criteria are concrete and testable (rendered H1 from jcr:title, exact visual order, locked-from-removal behavior). Dependencies on T-004/T-008/T-010 are real and necessary. Size is appropriate for one sitting (template structure edit + policy config). Minor non-blocking note: AC could also assert linkDisabled and that author-facing title override fields are hidden, but the description covers this and the verdict stands.",
+            "validator": "claude-cli"
+          }
+        }
+      ]
+    },
+    {
+      "localId": "T-012",
+      "title": "Build custom Financial Data Table component with structured row/column/cell dialog",
+      "iterations": 1,
+      "passed": true,
+      "finalDraft": {
+        "localId": "T-012",
+        "title": "Build custom Financial Data Table component with structured row/column/cell dialog",
+        "description": "Why: Decision #7 — the capacity table must NOT be authored as HTML in Core Text RTE. It needs typed rows/columns/cells, a \"first row as header\" toggle (matching the source's `.no-header` pattern with a visual-only first row), per-cell positive/negative class, optional per-cell footnote anchor reference, and striping.\n\nWhat: Create `aem-project-archetype/{ARCHETYPE_DIR}/ui.apps/.../components/content/financialdatatable/` with:\n- `.content.xml` registering the component.\n- `cq:dialog` with: `caption` (text), `firstRowAsHeader` (boolean), `striped` (boolean, default true), and a multifield-of-multifields representing rows × cells. Each cell exposes: `value` (text), `cellClass` (select: none/positive/negative), `footnoteRef` (number, links to footnote `_ftn<n>`).\n- `financialdatatable.html` rendering the structured data into a semantic `<table>` with `<thead>` (only when `firstRowAsHeader=true`), `<tbody>`, `<tr>`, `<th>`/`<td>`, plus appropriate CSS classes.\n- A Sling Model (`core/.../models/FinancialDataTableModel.java`) that normalizes the structured data and computes derived classes.\n- Striping is CSS-only (T-019); the model exposes the `striped` flag for the HTL.\n\nEdge cases: the source has 7 data rows × 5 columns (label + 4 quarters: 3Q26 / 4Q26 / 2H26 / FY26). Ignore the source's trailing empty `<td>` per row (EDS layout artefact). Author should be able to add/remove rows and the cells-per-row count should be enforced consistently (validation in dialog or model).",
+        "acceptance_criteria": [
+          "Given an author opens the Financial Data Table dialog, when they configure 7 rows × 5 cells with `firstRowAsHeader=false` and `striped=true`, then the rendered table has no `<thead>`, all 7 rows in `<tbody>`, and odd/even rows render with the striped class.",
+          "Given a cell with `cellClass=positive` and `value=+3.4%`, when rendered, then the `<td>` carries a `cell-positive` (or equivalent) CSS class and the value text appears inside.",
+          "Given a cell with `footnoteRef=2`, when rendered, then the cell's value is followed by a superscript anchor `<sup><a href=\"#_ftn2\">[2]</a></sup>`.",
+          "Given a unit test for `FinancialDataTableModel`, when run with a row missing cells, then the model emits warning logging and renders empty cells rather than throwing."
+        ],
+        "dependencies": [
+          "T-005"
+        ],
+        "type": "feature",
+        "priority": "P1",
+        "labels": [
+          "agent-beads",
+          "aem",
+          "ui.apps",
+          "core",
+          "component",
+          "custom"
+        ]
+      },
+      "history": [
+        {
+          "draft": {
+            "localId": "T-012",
+            "title": "Build custom Financial Data Table component with structured row/column/cell dialog",
+            "description": "Why: Decision #7 — the capacity table must NOT be authored as HTML in Core Text RTE. It needs typed rows/columns/cells, a \"first row as header\" toggle (matching the source's `.no-header` pattern with a visual-only first row), per-cell positive/negative class, optional per-cell footnote anchor reference, and striping.\n\nWhat: Create `aem-project-archetype/{ARCHETYPE_DIR}/ui.apps/.../components/content/financialdatatable/` with:\n- `.content.xml` registering the component.\n- `cq:dialog` with: `caption` (text), `firstRowAsHeader` (boolean), `striped` (boolean, default true), and a multifield-of-multifields representing rows × cells. Each cell exposes: `value` (text), `cellClass` (select: none/positive/negative), `footnoteRef` (number, links to footnote `_ftn<n>`).\n- `financialdatatable.html` rendering the structured data into a semantic `<table>` with `<thead>` (only when `firstRowAsHeader=true`), `<tbody>`, `<tr>`, `<th>`/`<td>`, plus appropriate CSS classes.\n- A Sling Model (`core/.../models/FinancialDataTableModel.java`) that normalizes the structured data and computes derived classes.\n- Striping is CSS-only (T-019); the model exposes the `striped` flag for the HTL.\n\nEdge cases: the source has 7 data rows × 5 columns (label + 4 quarters: 3Q26 / 4Q26 / 2H26 / FY26). Ignore the source's trailing empty `<td>` per row (EDS layout artefact). Author should be able to add/remove rows and the cells-per-row count should be enforced consistently (validation in dialog or model).",
+            "acceptance_criteria": [
+              "Given an author opens the Financial Data Table dialog, when they configure 7 rows × 5 cells with `firstRowAsHeader=false` and `striped=true`, then the rendered table has no `<thead>`, all 7 rows in `<tbody>`, and odd/even rows render with the striped class.",
+              "Given a cell with `cellClass=positive` and `value=+3.4%`, when rendered, then the `<td>` carries a `cell-positive` (or equivalent) CSS class and the value text appears inside.",
+              "Given a cell with `footnoteRef=2`, when rendered, then the cell's value is followed by a superscript anchor `<sup><a href=\"#_ftn2\">[2]</a></sup>`.",
+              "Given a unit test for `FinancialDataTableModel`, when run with a row missing cells, then the model emits warning logging and renders empty cells rather than throwing."
+            ],
+            "dependencies": [
+              "T-005"
+            ],
+            "type": "feature",
+            "priority": "P1",
+            "labels": [
+              "agent-beads",
+              "aem",
+              "ui.apps",
+              "core",
+              "component",
+              "custom"
+            ]
+          },
+          "result": {
+            "passed": true,
+            "issues": [
+              {
+                "rule": "specificity",
+                "severity": "warning",
+                "message": "Path contains unresolved placeholder `{ARCHETYPE_DIR}`. Either resolve to the concrete archetype directory name or note that it's a documented project-wide variable so two engineers don't diverge."
+              },
+              {
+                "rule": "dependencies",
+                "severity": "warning",
+                "message": "Description references T-019 (CSS striping) but T-019 is not listed as a dependency. Acceptable since this task only emits the `striped` class hook, but consider a `related: [T-019]` link so the visual outcome traces."
+              },
+              {
+                "rule": "size",
+                "severity": "warning",
+                "message": "Borderline for one sitting: nested multifield (rows × cells) in Granite UI + Sling Model + HTL + unit tests + dialog/model validation is realistically 1–2 days. Consider splitting into (a) dialog + component scaffold, (b) Sling Model + HTL rendering + tests if it slips past a day."
+              },
+              {
+                "rule": "acceptance_criteria",
+                "severity": "warning",
+                "message": "AC for footnote anchor hardcodes the exact markup `<sup><a href=\"#_ftn2\">[2]</a></sup>`. Fine if that's the contract with T-? footnote component, otherwise loosen to 'a superscript link targeting `#_ftn<n>` with visible text `[<n>]`'."
+              },
+              {
+                "rule": "acceptance_criteria",
+                "severity": "warning",
+                "message": "Missing AC for the `firstRowAsHeader=true` path — the primary toggle behavior should have its own Given/When/Then (renders `<thead>` with `<th>` cells from row 1, remaining rows in `<tbody>`)."
+              }
+            ],
+            "rationale": "Task is concrete, well-scoped to a single component, has typed dialog fields, structured data model, and testable ACs in Given/When/Then form. Dependencies are stated (T-005) and atomicity holds once T-005 ships. Warnings cover an unresolved path placeholder, an implicit T-019 link, borderline size from nested-multifield complexity, and an AC gap for the header-on path — none rise to blocker. Accept as-is or tighten the warnings inline.",
+            "validator": "claude-cli"
+          }
+        }
+      ]
+    },
+    {
+      "localId": "T-013",
+      "title": "Create or extend Global Header Experience Fragment (brand + primary Qantas nav + Newsroom nav-tools)",
+      "iterations": 1,
+      "passed": true,
+      "finalDraft": {
+        "localId": "T-013",
+        "title": "Create or extend Global Header Experience Fragment (brand + primary Qantas nav + Newsroom nav-tools)",
+        "description": "Why: Region 1 (with retired Region 2 folded in). Per Decision #5 and the inspection in T-001, either reuse-and-extend an existing XF or create a new one. The XF composes brand area, primary Qantas nav (7 top-level entries with drop-downs), and Newsroom `nav-tools` (7 buttons + Newsroom-scoped search).\n\nWhat: Under `aem-project-archetype/{ARCHETYPE_DIR}/ui.content/.../content/experience-fragments/<site>/header/` (or the existing path identified in T-001), build the XF with:\n- Brand area: Qantas logo (link to `qantas.com`), oneworld logo (link to `qantas.com/.../oneworld`), site-wide search form.\n- Primary nav: Core Navigation component rooted at the structured-children path that holds `Destinations / Flight deals / Plan / Book / Fly / Qantas for Business / Help`, with drop-downs.\n- Newsroom `nav-tools`: Core Navigation rooted at the Newsroom section with entries `Home / Media Releases / Roo Tales / Qantas Responds / Speeches / Gallery / Media Enquiries`, plus a Newsroom-scoped search form.\n\nActive-state for the current Newsroom tab MUST be resolved by Core Navigation from the current page path (not hard-coded).\n\nReference the XF from the press-release template structure (T-004) as a template-locked component.\n\nEdge cases: if T-001 verdict is \"reuse,\" only add missing Newsroom `nav-tools` content; do not duplicate brand/primary nav.",
+        "acceptance_criteria": [
+          "Given a press-release page rendered at `/content/<site>/newsroom/media-releases/qantas-group-market-update-april-2026`, when the header HTML is inspected, then the brand area, primary nav (7 entries), and Newsroom nav (7 entries) all appear in that order.",
+          "Given the current page is under `/newsroom/media-releases/...`, when the Newsroom nav renders, then the `Media Releases` tab carries the active-state class (resolved by Core Navigation from the current path, not hard-coded).",
+          "Given the XF is referenced from the template structure, when an author edits a page, then the header is locked and cannot be removed.",
+          "Given a primary-nav drop-down (e.g., `Plan`), when an author edits the XF, then sub-links can be added/removed via the structured-children authoring model."
+        ],
+        "dependencies": [
+          "T-001",
+          "T-004"
+        ],
+        "type": "feature",
+        "priority": "P1",
+        "labels": [
+          "agent-beads",
+          "aem",
+          "ui.content",
+          "experience-fragments",
+          "navigation"
+        ]
+      },
+      "history": [
+        {
+          "draft": {
+            "localId": "T-013",
+            "title": "Create or extend Global Header Experience Fragment (brand + primary Qantas nav + Newsroom nav-tools)",
+            "description": "Why: Region 1 (with retired Region 2 folded in). Per Decision #5 and the inspection in T-001, either reuse-and-extend an existing XF or create a new one. The XF composes brand area, primary Qantas nav (7 top-level entries with drop-downs), and Newsroom `nav-tools` (7 buttons + Newsroom-scoped search).\n\nWhat: Under `aem-project-archetype/{ARCHETYPE_DIR}/ui.content/.../content/experience-fragments/<site>/header/` (or the existing path identified in T-001), build the XF with:\n- Brand area: Qantas logo (link to `qantas.com`), oneworld logo (link to `qantas.com/.../oneworld`), site-wide search form.\n- Primary nav: Core Navigation component rooted at the structured-children path that holds `Destinations / Flight deals / Plan / Book / Fly / Qantas for Business / Help`, with drop-downs.\n- Newsroom `nav-tools`: Core Navigation rooted at the Newsroom section with entries `Home / Media Releases / Roo Tales / Qantas Responds / Speeches / Gallery / Media Enquiries`, plus a Newsroom-scoped search form.\n\nActive-state for the current Newsroom tab MUST be resolved by Core Navigation from the current page path (not hard-coded).\n\nReference the XF from the press-release template structure (T-004) as a template-locked component.\n\nEdge cases: if T-001 verdict is \"reuse,\" only add missing Newsroom `nav-tools` content; do not duplicate brand/primary nav.",
+            "acceptance_criteria": [
+              "Given a press-release page rendered at `/content/<site>/newsroom/media-releases/qantas-group-market-update-april-2026`, when the header HTML is inspected, then the brand area, primary nav (7 entries), and Newsroom nav (7 entries) all appear in that order.",
+              "Given the current page is under `/newsroom/media-releases/...`, when the Newsroom nav renders, then the `Media Releases` tab carries the active-state class (resolved by Core Navigation from the current path, not hard-coded).",
+              "Given the XF is referenced from the template structure, when an author edits a page, then the header is locked and cannot be removed.",
+              "Given a primary-nav drop-down (e.g., `Plan`), when an author edits the XF, then sub-links can be added/removed via the structured-children authoring model."
+            ],
+            "dependencies": [
+              "T-001",
+              "T-004"
+            ],
+            "type": "feature",
+            "priority": "P1",
+            "labels": [
+              "agent-beads",
+              "aem",
+              "ui.content",
+              "experience-fragments",
+              "navigation"
+            ]
+          },
+          "result": {
+            "passed": true,
+            "issues": [
+              {
+                "rule": "size",
+                "severity": "warning",
+                "message": "Composing brand + primary nav (7 entries with drop-downs) + Newsroom nav-tools (7 entries) + scoped search in one XF may exceed a one-day sitting; consider splitting into (a) brand+primary nav and (b) Newsroom nav-tools+search if T-001 verdict is 'create new'."
+              },
+              {
+                "rule": "specificity",
+                "severity": "warning",
+                "message": "Path placeholders `{ARCHETYPE_DIR}` and `<site>` are unresolved; resolving them post-T-001 is fine, but pin them in the issue notes once T-001 closes to avoid drift."
+              },
+              {
+                "rule": "acceptance_criteria",
+                "severity": "warning",
+                "message": "Add a negative check for the site-wide vs. Newsroom-scoped search forms (e.g., submitting Newsroom search constrains results to /newsroom/*) to make 'scoped' testable."
+              }
+            ],
+            "rationale": "Draft is clear, feasible, and traceable: dependencies on T-001 (reuse-vs-create decision) and T-004 (template wiring) are real and stated; acceptance criteria are concrete and observable (DOM order, active-state resolution, template lock, structured-children authoring). Atomicity holds because the reuse/extend branch is explicitly handled. Warnings on size, unresolved path placeholders, and a missing scoped-search assertion are improvements, not blockers.",
+            "validator": "claude-cli"
+          }
+        }
+      ]
+    },
+    {
+      "localId": "T-014",
+      "title": "Create or extend Global Footer Experience Fragment (logo + social + Privacy/Terms + Useful Links + copyright)",
+      "iterations": 1,
+      "passed": true,
+      "finalDraft": {
+        "localId": "T-014",
+        "title": "Create or extend Global Footer Experience Fragment (logo + social + Privacy/Terms + Useful Links + copyright)",
+        "description": "Why: Region 6. Same reuse-or-create framing as T-013, driven by T-001's findings.\n\nWhat: Under `aem-project-archetype/{ARCHETYPE_DIR}/ui.content/.../content/experience-fragments/<site>/footer/`, build the XF with:\n- Logos column: Qantas logo + 5 social icon anchors (Facebook, Twitter, Instagram, LinkedIn, YouTube). Authoring fields for each social URL — leave Facebook/Twitter/Instagram/LinkedIn empty by default and flag them in i18n/notes for content ops to populate; YouTube has a real anchor in source.\n- Left nav column: `Privacy & Security`, `Terms of Use` link list.\n- Useful Links column: `Qantas`, `Jetstar`, `Qantas Points`, `Qantas Freight`, `Qantas Travel Insider`, `oneworld Alliance` link list.\n- Copyright line: `© The Official News Room of Qantas Airways Limited ABN 16 009 661 901` (i18n key).\n\nReference from press-release template structure (T-004) as template-locked.\n\nEdge cases: 4 of 5 social icons are placeholder stubs in source — model the social row so an empty URL renders no anchor (or a disabled/visually-muted state) rather than `<a href=\"\">`.",
+        "acceptance_criteria": [
+          "Given a press-release page renders, when the footer HTML is inspected, then the four sections appear in order: logos+social, left nav (Privacy & Security / Terms of Use), Useful Links (6 entries), copyright line.",
+          "Given a social icon URL is empty, when the footer renders, then no `<a href=\"\">` is emitted (the icon is omitted or rendered as a disabled span).",
+          "Given the copyright line, when rendered, then it reads `© The Official News Room of Qantas Airways Limited ABN 16 009 661 901` and is sourced from the i18n bundle (T-021)."
+        ],
+        "dependencies": [
+          "T-001",
+          "T-004"
+        ],
+        "type": "feature",
+        "priority": "P1",
+        "labels": [
+          "agent-beads",
+          "aem",
+          "ui.content",
+          "experience-fragments"
+        ]
+      },
+      "history": [
+        {
+          "draft": {
+            "localId": "T-014",
+            "title": "Create or extend Global Footer Experience Fragment (logo + social + Privacy/Terms + Useful Links + copyright)",
+            "description": "Why: Region 6. Same reuse-or-create framing as T-013, driven by T-001's findings.\n\nWhat: Under `aem-project-archetype/{ARCHETYPE_DIR}/ui.content/.../content/experience-fragments/<site>/footer/`, build the XF with:\n- Logos column: Qantas logo + 5 social icon anchors (Facebook, Twitter, Instagram, LinkedIn, YouTube). Authoring fields for each social URL — leave Facebook/Twitter/Instagram/LinkedIn empty by default and flag them in i18n/notes for content ops to populate; YouTube has a real anchor in source.\n- Left nav column: `Privacy & Security`, `Terms of Use` link list.\n- Useful Links column: `Qantas`, `Jetstar`, `Qantas Points`, `Qantas Freight`, `Qantas Travel Insider`, `oneworld Alliance` link list.\n- Copyright line: `© The Official News Room of Qantas Airways Limited ABN 16 009 661 901` (i18n key).\n\nReference from press-release template structure (T-004) as template-locked.\n\nEdge cases: 4 of 5 social icons are placeholder stubs in source — model the social row so an empty URL renders no anchor (or a disabled/visually-muted state) rather than `<a href=\"\">`.",
+            "acceptance_criteria": [
+              "Given a press-release page renders, when the footer HTML is inspected, then the four sections appear in order: logos+social, left nav (Privacy & Security / Terms of Use), Useful Links (6 entries), copyright line.",
+              "Given a social icon URL is empty, when the footer renders, then no `<a href=\"\">` is emitted (the icon is omitted or rendered as a disabled span).",
+              "Given the copyright line, when rendered, then it reads `© The Official News Room of Qantas Airways Limited ABN 16 009 661 901` and is sourced from the i18n bundle (T-021)."
+            ],
+            "dependencies": [
+              "T-001",
+              "T-004"
+            ],
+            "type": "feature",
+            "priority": "P1",
+            "labels": [
+              "agent-beads",
+              "aem",
+              "ui.content",
+              "experience-fragments"
+            ]
+          },
+          "result": {
+            "passed": true,
+            "issues": [
+              {
+                "rule": "dependencies",
+                "severity": "warning",
+                "message": "AC #3 references T-021 (i18n bundle) but T-021 is not listed in dependencies. Either add T-021 to dependencies or relax the AC to allow the i18n key to land before the bundle exists."
+              },
+              {
+                "rule": "specificity",
+                "severity": "warning",
+                "message": "`{ARCHETYPE_DIR}` placeholder is unresolved — fine if T-001 is meant to fill it in, but worth confirming the path convention before work starts."
+              },
+              {
+                "rule": "acceptance_criteria",
+                "severity": "warning",
+                "message": "Consider an explicit AC for the link list contents and order in Useful Links / left nav (currently only the count is verifiable in AC #1)."
+              }
+            ],
+            "rationale": "Task is clear, atomic, properly scoped (single XF with concrete columns and copy), feasible within AEM XF authoring, and ≤1 day for a senior. ACs are concrete and testable, including the empty-href edge case. Dependencies on T-001 (archetype discovery) and T-004 (template reference) are real. Minor warnings around the unlisted T-021 reference and placeholder path do not block.",
+            "validator": "claude-cli"
+          }
+        }
+      ]
+    },
+    {
+      "localId": "T-015",
+      "title": "Build custom Footnotes component with deterministic `_ftn<n>` anchor IDs",
+      "iterations": 1,
+      "passed": true,
+      "finalDraft": {
+        "localId": "T-015",
+        "title": "Build custom Footnotes component with deterministic `_ftn<n>` anchor IDs",
+        "description": "Why: Decision #8 — source HTML has a duplicate `id=\"_ftnref4\"` (concrete defect from RTE-anchor authoring). The Footnotes component MUST emit deterministic `id=\"_ftn<n>\"` anchors so inline `[n]` superscripts in body Core Text reliably target `#_ftn<n>`.\n\nWhat: Create `aem-project-archetype/{ARCHETYPE_DIR}/ui.apps/.../components/content/footnotes/` with:\n- `.content.xml` registering the component.\n- `cq:dialog` with a multifield: each entry has `text` (rich-text, limited to inline formatting + links).\n- `footnotes.html` rendering an `<ol>` (or `<div>` with numbered items) where each item carries `id=\"_ftn<n>\"` (1-based index, computed in HTL using the iterator) and ends with a return-arrow anchor `<a href=\"#_ftnref<n>\">↩</a>`.\n- A Sling Model if HTL-only iteration becomes fragile (e.g., `core/.../models/FootnotesModel.java` exposing a list of `{ index, html, refAnchorId }`).\n\nThe body Core Text RTE policy (T-018) must enable anchor links so authors can hand-author `[<sup><a href=\"#_ftn1\">1</a></sup>]` superscripts. Inline `[n]` markers in body Core Text use `#_ftnref<n>` as the originating anchor on the marker side and `#_ftn<n>` as the target ID on the footnote side.\n\nEdge cases: an author cannot override the anchor ID — the component computes it from list position. Re-ordering entries renumbers all anchors and breaks any inline links pointing at `#_ftn<n>` — document this risk in the dialog help text.",
+        "acceptance_criteria": [
+          "Given 4 footnote entries authored in order, when the page renders, then exactly 4 `<li id=\"_ftn1\">…<li id=\"_ftn4\">` (or equivalent) elements appear, each ending with a return-anchor `<a href=\"#_ftnref<n>\">`.",
+          "Given two distinct authored pages each with 4 footnotes, when their HTML is fetched, then both render `_ftn1`–`_ftn4` deterministically with no duplicates (contrast with the source HTML's duplicate `_ftnref4`).",
+          "Given an inline `[1]` superscript in body Core Text linking to `#_ftn1`, when a user clicks it, then the browser scrolls to the first footnote entry.",
+          "Given a unit test on `FootnotesModel`, when given an empty list, then the component renders nothing (no empty `<ol>`)."
+        ],
+        "dependencies": [
+          "T-005"
+        ],
+        "type": "feature",
+        "priority": "P1",
+        "labels": [
+          "agent-beads",
+          "aem",
+          "ui.apps",
+          "core",
+          "component",
+          "custom"
+        ]
+      },
+      "history": [
+        {
+          "draft": {
+            "localId": "T-015",
+            "title": "Build custom Footnotes component with deterministic `_ftn<n>` anchor IDs",
+            "description": "Why: Decision #8 — source HTML has a duplicate `id=\"_ftnref4\"` (concrete defect from RTE-anchor authoring). The Footnotes component MUST emit deterministic `id=\"_ftn<n>\"` anchors so inline `[n]` superscripts in body Core Text reliably target `#_ftn<n>`.\n\nWhat: Create `aem-project-archetype/{ARCHETYPE_DIR}/ui.apps/.../components/content/footnotes/` with:\n- `.content.xml` registering the component.\n- `cq:dialog` with a multifield: each entry has `text` (rich-text, limited to inline formatting + links).\n- `footnotes.html` rendering an `<ol>` (or `<div>` with numbered items) where each item carries `id=\"_ftn<n>\"` (1-based index, computed in HTL using the iterator) and ends with a return-arrow anchor `<a href=\"#_ftnref<n>\">↩</a>`.\n- A Sling Model if HTL-only iteration becomes fragile (e.g., `core/.../models/FootnotesModel.java` exposing a list of `{ index, html, refAnchorId }`).\n\nThe body Core Text RTE policy (T-018) must enable anchor links so authors can hand-author `[<sup><a href=\"#_ftn1\">1</a></sup>]` superscripts. Inline `[n]` markers in body Core Text use `#_ftnref<n>` as the originating anchor on the marker side and `#_ftn<n>` as the target ID on the footnote side.\n\nEdge cases: an author cannot override the anchor ID — the component computes it from list position. Re-ordering entries renumbers all anchors and breaks any inline links pointing at `#_ftn<n>` — document this risk in the dialog help text.",
+            "acceptance_criteria": [
+              "Given 4 footnote entries authored in order, when the page renders, then exactly 4 `<li id=\"_ftn1\">…<li id=\"_ftn4\">` (or equivalent) elements appear, each ending with a return-anchor `<a href=\"#_ftnref<n>\">`.",
+              "Given two distinct authored pages each with 4 footnotes, when their HTML is fetched, then both render `_ftn1`–`_ftn4` deterministically with no duplicates (contrast with the source HTML's duplicate `_ftnref4`).",
+              "Given an inline `[1]` superscript in body Core Text linking to `#_ftn1`, when a user clicks it, then the browser scrolls to the first footnote entry.",
+              "Given a unit test on `FootnotesModel`, when given an empty list, then the component renders nothing (no empty `<ol>`)."
+            ],
+            "dependencies": [
+              "T-005"
+            ],
+            "type": "feature",
+            "priority": "P1",
+            "labels": [
+              "agent-beads",
+              "aem",
+              "ui.apps",
+              "core",
+              "component",
+              "custom"
+            ]
+          },
+          "result": {
+            "passed": true,
+            "issues": [
+              {
+                "rule": "specificity",
+                "severity": "warning",
+                "message": "Path placeholder `{ARCHETYPE_DIR}` and `core/.../models/` are unresolved — confirm concrete paths before implementation, or note that they're resolved by T-005's archetype generation."
+              },
+              {
+                "rule": "acceptance_criteria",
+                "severity": "warning",
+                "message": "AC4 references `FootnotesModel` as if mandatory, but the description treats the Sling Model as conditional ('if HTL-only iteration becomes fragile'). Tighten: either commit to the model, or rewrite AC4 to test the rendered output for the empty case regardless of implementation."
+              },
+              {
+                "rule": "dependencies",
+                "severity": "warning",
+                "message": "Description calls out T-018 (body Core Text RTE policy enabling anchor links) as a runtime prerequisite for the inline `[n]` superscript flow, but it's not in `dependencies`. Consider adding T-018 or noting it as a soft/integration dependency."
+              }
+            ],
+            "rationale": "Task is clear, atomic, feasible, and appropriately sized for one sitting. Acceptance criteria are concrete and testable, with a strong determinism check that directly addresses the duplicate-id defect motivating the work. Warnings only: unresolved path placeholders, an AC that presumes the optional Sling Model, and a missing soft dependency on T-018 for end-to-end inline-superscript verification. None block acceptance.",
+            "validator": "claude-cli"
+          }
+        }
+      ]
+    },
+    {
+      "localId": "T-016",
+      "title": "Build Newsroom List component as Core List v4 proxy with `releaseCity` Sling Model and conditional HTL meta line",
+      "iterations": 2,
+      "passed": true,
+      "finalDraft": {
+        "localId": "T-016",
+        "title": "Build Newsroom List component as Core List v4 proxy with `releaseCity` Sling Model and conditional HTL meta line",
+        "description": "Why: Region 5 — Related Posts. Decision #2 mandates extending Core List via `sling:resourceSuperType` with a small Sling Model that exposes optional `releaseCity` per item. HTL renders `<span data-sly-test=\"${item.city}\">${item.city} •</span> ${item.date}` so city-less entries degrade gracefully.\n\nPrerequisites (resolve before starting):\n- Confirm archetype module path: `ui.apps/src/main/content/jcr_root/apps/<appId>/components/content/newsroomlist/` — replace `<appId>` with the value from the archetype's `appId` Maven property.\n- Pin Core List version to `core/wcm/components/list/v4/list` (matches archetype baseline; bump only if archetype upgrade lands first).\n- Newsroom page properties `releaseCity` (String, optional) and `releaseDate` (Date, required) must already be defined on the Newsroom page template (provided by T-002).\n\nWhat:\n1. Create proxy component at the path above with `sling:resourceSuperType=\"core/wcm/components/list/v4/list\"`.\n2. Override the list-item HTL template to render: title link + meta line `[city •] formatted-date`, using the shared date-format utility from T-008 (do not duplicate).\n3. Add Sling Model `core/.../models/NewsroomListItemModel.java` that adapts each Core List item and exposes `getCity()` (reads listed page's `releaseCity`), `getDate()` (formatted via T-008 utility from `releaseDate`), `getTitle()`, `getUrl()`.\n4. Override policy schema so authors configure: list source (tags / fixed list / parent path), max items (default 3), sort by `releaseDate` desc.\n\nEdge cases (decided):\n- Items missing `releaseDate` are EXCLUDED from the list (not sorted last).\n- Items missing `releaseCity` render date-only with no leading bullet and no empty span (HTL `data-sly-test` omits the element entirely).\n\nDate format contract: identical to T-008 (`d'<ordinal>' MMMM yyyy 'at' H:mm`, site default locale & timezone). If T-008 ships a public utility class, reuse it; otherwise this task blocks on T-008.",
+        "acceptance_criteria": [
+          "Given 3 newsroom pages — A: `releaseCity=Sydney`, `releaseDate=2026-04-08T05:25:00`; B: no `releaseCity`, `releaseDate=2026-04-07T10:00:00`; C: no `releaseCity`, `releaseDate=2026-04-06T09:00:00` — when the Newsroom List renders, then A shows \"Sydney • 8th April 2026 at 5:25\", and B and C show their formatted date only, with no leading bullet and no empty `<span>` in the DOM.",
+          "Given a 4th page D with `releaseCity=Perth` but no `releaseDate`, when the list renders, then D is excluded from results.",
+          "Given the Newsroom List policy with `sortBy=releaseDate desc` and `maxItems=3`, when the list renders against >3 eligible pages, then items appear newest-first and exactly 3 are emitted.",
+          "Given the policy dialog, when an author opens it, then list source, max items (default 3), and sort options are visible and persist on save.",
+          "Given a JUnit test on `NewsroomListItemModel` with a mocked list item whose page has `releaseCity=null`, then `getCity()` returns null and a rendering test confirms HTL emits no `<span>` for that item.",
+          "Given a JUnit test with `releaseDate=null`, then the model is filtered out of `getItems()` (or equivalent collection accessor)."
+        ],
+        "dependencies": [
+          "T-002",
+          "T-008"
+        ],
+        "type": "feature",
+        "priority": "P1",
+        "labels": [
+          "agent-beads",
+          "aem",
+          "ui.apps",
+          "core",
+          "component",
+          "sling-model"
+        ]
+      },
+      "history": [
+        {
+          "draft": {
+            "localId": "T-016",
+            "title": "Build Newsroom List component (Core List proxy) with optional `releaseCity` Sling Model and conditional HTL",
+            "description": "Why: Region 5 — Related Posts. Decision #2 mandates extending Core List via `sling:resourceSuperType` with a small Sling Model that exposes optional `releaseCity` per item, and HTL that renders `<span data-sly-test=\"${item.city}\">${item.city} •</span> ${item.date}` so city-less entries degrade gracefully.\n\nWhat:\n1. Create `aem-project-archetype/{ARCHETYPE_DIR}/ui.apps/.../components/content/newsroomlist/` proxying Core List via `sling:resourceSuperType=\"core/wcm/components/list/v4/list\"` (or current archetype baseline).\n2. Override the list-item HTL template to render: title link + meta line `[city •] formatted-date`. Date formatting reuses the same ordinal/format approach as T-008 (extract a shared utility or duplicate cautiously).\n3. Add a Sling Model in `core/.../models/NewsroomListItemModel.java` that wraps each Core List item and exposes `getCity()` (reads the listed page's `releaseCity` property), `getDate()` (formatted from `releaseDate`), `getTitle()`, `getUrl()`.\n4. Override the policy schema if needed so authors can configure: list source (tags / fixed list / parent path), max items (default 3), sort by `releaseDate` desc.\n\nEdge cases: items missing `releaseDate` should be sorted last (or excluded — pick one and document). Items missing `releaseCity` render date-only without leading bullet.",
+            "acceptance_criteria": [
+              "Given 3 newsroom pages — page A with `releaseCity=Sydney` and `releaseDate=2026-04-08T05:25:00`, page B and C with no `releaseCity` — when the Newsroom List renders, then page A shows \"Sydney • 8th April 2026 at 5:25\" and pages B and C show date-only with no leading bullet.",
+              "Given the Newsroom List is configured with `sortBy=releaseDate desc` and `maxItems=3`, when the list renders, then items appear newest-first and are capped at 3.",
+              "Given the policy dialog, when an author opens it, then list source, max items, and sort options are all configurable.",
+              "Given a unit test on `NewsroomListItemModel`, when run with `releaseCity=null`, then `getCity()` returns null and HTL's `data-sly-test` correctly omits the span."
+            ],
+            "dependencies": [
+              "T-002"
+            ],
+            "type": "feature",
+            "priority": "P1",
+            "labels": [
+              "agent-beads",
+              "aem",
+              "ui.apps",
+              "core",
+              "component",
+              "sling-model"
+            ]
+          },
+          "result": {
+            "passed": false,
+            "issues": [
+              {
+                "rule": "dependencies",
+                "severity": "blocker",
+                "message": "Description references T-008 for shared date-formatting utility but T-008 is not listed as a dependency. Add it (and confirm whether T-002 is the correct page-property/schema dependency)."
+              },
+              {
+                "rule": "specificity",
+                "severity": "blocker",
+                "message": "Path placeholder `{ARCHETYPE_DIR}` is unresolved and the Core List version is hedged (`v4` \"or current archetype baseline\"). Pin the exact archetype module path and the exact `sling:resourceSuperType` version before work starts."
+              },
+              {
+                "rule": "acceptance_criteria",
+                "severity": "blocker",
+                "message": "AC #1 expects \"8th April 2026 at 5:25\" but the date format/locale/timezone contract isn't defined here (only \"reuses T-008\"). Either inline the exact format spec or make AC explicitly reference T-008's format. Also the \"missing releaseDate\" edge case is left as \"pick one and document\" — resolve before acceptance, not during."
+              },
+              {
+                "rule": "size",
+                "severity": "warning",
+                "message": "Proxy component + HTL override + Sling Model + policy schema override + unit tests is at the upper edge of one sitting. Consider splitting policy/schema work into a sibling task if the existing Core List policy can't be inherited as-is."
+              },
+              {
+                "rule": "atomicity",
+                "severity": "warning",
+                "message": "Depends on `releaseCity`/`releaseDate` page properties existing on Newsroom pages. If T-002 doesn't establish those, add the page-properties task as an explicit dependency."
+              }
+            ],
+            "suggested": {
+              "localId": "T-016",
+              "title": "Build Newsroom List component as Core List v4 proxy with `releaseCity` Sling Model and conditional HTL meta line",
+              "description": "Why: Region 5 — Related Posts. Decision #2 mandates extending Core List via `sling:resourceSuperType` with a small Sling Model that exposes optional `releaseCity` per item. HTL renders `<span data-sly-test=\"${item.city}\">${item.city} •</span> ${item.date}` so city-less entries degrade gracefully.\n\nPrerequisites (resolve before starting):\n- Confirm archetype module path: `ui.apps/src/main/content/jcr_root/apps/<appId>/components/content/newsroomlist/` — replace `<appId>` with the value from the archetype's `appId` Maven property.\n- Pin Core List version to `core/wcm/components/list/v4/list` (matches archetype baseline; bump only if archetype upgrade lands first).\n- Newsroom page properties `releaseCity` (String, optional) and `releaseDate` (Date, required) must already be defined on the Newsroom page template (provided by T-002).\n\nWhat:\n1. Create proxy component at the path above with `sling:resourceSuperType=\"core/wcm/components/list/v4/list\"`.\n2. Override the list-item HTL template to render: title link + meta line `[city •] formatted-date`, using the shared date-format utility from T-008 (do not duplicate).\n3. Add Sling Model `core/.../models/NewsroomListItemModel.java` that adapts each Core List item and exposes `getCity()` (reads listed page's `releaseCity`), `getDate()` (formatted via T-008 utility from `releaseDate`), `getTitle()`, `getUrl()`.\n4. Override policy schema so authors configure: list source (tags / fixed list / parent path), max items (default 3), sort by `releaseDate` desc.\n\nEdge cases (decided):\n- Items missing `releaseDate` are EXCLUDED from the list (not sorted last).\n- Items missing `releaseCity` render date-only with no leading bullet and no empty span (HTL `data-sly-test` omits the element entirely).\n\nDate format contract: identical to T-008 (`d'<ordinal>' MMMM yyyy 'at' H:mm`, site default locale & timezone). If T-008 ships a public utility class, reuse it; otherwise this task blocks on T-008.",
+              "acceptance_criteria": [
+                "Given 3 newsroom pages — A: `releaseCity=Sydney`, `releaseDate=2026-04-08T05:25:00`; B: no `releaseCity`, `releaseDate=2026-04-07T10:00:00`; C: no `releaseCity`, `releaseDate=2026-04-06T09:00:00` — when the Newsroom List renders, then A shows \"Sydney • 8th April 2026 at 5:25\", and B and C show their formatted date only, with no leading bullet and no empty `<span>` in the DOM.",
+                "Given a 4th page D with `releaseCity=Perth` but no `releaseDate`, when the list renders, then D is excluded from results.",
+                "Given the Newsroom List policy with `sortBy=releaseDate desc` and `maxItems=3`, when the list renders against >3 eligible pages, then items appear newest-first and exactly 3 are emitted.",
+                "Given the policy dialog, when an author opens it, then list source, max items (default 3), and sort options are visible and persist on save.",
+                "Given a JUnit test on `NewsroomListItemModel` with a mocked list item whose page has `releaseCity=null`, then `getCity()` returns null and a rendering test confirms HTL emits no `<span>` for that item.",
+                "Given a JUnit test with `releaseDate=null`, then the model is filtered out of `getItems()` (or equivalent collection accessor)."
+              ],
+              "dependencies": [
+                "T-002",
+                "T-008"
+              ],
+              "type": "feature",
+              "priority": "P1",
+              "labels": [
+                "agent-beads",
+                "aem",
+                "ui.apps",
+                "core",
+                "component",
+                "sling-model"
+              ]
+            },
+            "rationale": "Solid intent and mostly testable ACs, but blocked by an unresolved archetype path, an unpinned Core List version, an undefined date-format contract, and a missing T-008 dependency. The 'pick one and document' edge case must be decided up-front so AC is deterministic. Fix these and the task is ready.",
+            "validator": "claude-cli"
+          }
+        },
+        {
+          "draft": {
+            "localId": "T-016",
+            "title": "Build Newsroom List component as Core List v4 proxy with `releaseCity` Sling Model and conditional HTL meta line",
+            "description": "Why: Region 5 — Related Posts. Decision #2 mandates extending Core List via `sling:resourceSuperType` with a small Sling Model that exposes optional `releaseCity` per item. HTL renders `<span data-sly-test=\"${item.city}\">${item.city} •</span> ${item.date}` so city-less entries degrade gracefully.\n\nPrerequisites (resolve before starting):\n- Confirm archetype module path: `ui.apps/src/main/content/jcr_root/apps/<appId>/components/content/newsroomlist/` — replace `<appId>` with the value from the archetype's `appId` Maven property.\n- Pin Core List version to `core/wcm/components/list/v4/list` (matches archetype baseline; bump only if archetype upgrade lands first).\n- Newsroom page properties `releaseCity` (String, optional) and `releaseDate` (Date, required) must already be defined on the Newsroom page template (provided by T-002).\n\nWhat:\n1. Create proxy component at the path above with `sling:resourceSuperType=\"core/wcm/components/list/v4/list\"`.\n2. Override the list-item HTL template to render: title link + meta line `[city •] formatted-date`, using the shared date-format utility from T-008 (do not duplicate).\n3. Add Sling Model `core/.../models/NewsroomListItemModel.java` that adapts each Core List item and exposes `getCity()` (reads listed page's `releaseCity`), `getDate()` (formatted via T-008 utility from `releaseDate`), `getTitle()`, `getUrl()`.\n4. Override policy schema so authors configure: list source (tags / fixed list / parent path), max items (default 3), sort by `releaseDate` desc.\n\nEdge cases (decided):\n- Items missing `releaseDate` are EXCLUDED from the list (not sorted last).\n- Items missing `releaseCity` render date-only with no leading bullet and no empty span (HTL `data-sly-test` omits the element entirely).\n\nDate format contract: identical to T-008 (`d'<ordinal>' MMMM yyyy 'at' H:mm`, site default locale & timezone). If T-008 ships a public utility class, reuse it; otherwise this task blocks on T-008.",
+            "acceptance_criteria": [
+              "Given 3 newsroom pages — A: `releaseCity=Sydney`, `releaseDate=2026-04-08T05:25:00`; B: no `releaseCity`, `releaseDate=2026-04-07T10:00:00`; C: no `releaseCity`, `releaseDate=2026-04-06T09:00:00` — when the Newsroom List renders, then A shows \"Sydney • 8th April 2026 at 5:25\", and B and C show their formatted date only, with no leading bullet and no empty `<span>` in the DOM.",
+              "Given a 4th page D with `releaseCity=Perth` but no `releaseDate`, when the list renders, then D is excluded from results.",
+              "Given the Newsroom List policy with `sortBy=releaseDate desc` and `maxItems=3`, when the list renders against >3 eligible pages, then items appear newest-first and exactly 3 are emitted.",
+              "Given the policy dialog, when an author opens it, then list source, max items (default 3), and sort options are visible and persist on save.",
+              "Given a JUnit test on `NewsroomListItemModel` with a mocked list item whose page has `releaseCity=null`, then `getCity()` returns null and a rendering test confirms HTL emits no `<span>` for that item.",
+              "Given a JUnit test with `releaseDate=null`, then the model is filtered out of `getItems()` (or equivalent collection accessor)."
+            ],
+            "dependencies": [
+              "T-002",
+              "T-008"
+            ],
+            "type": "feature",
+            "priority": "P1",
+            "labels": [
+              "agent-beads",
+              "aem",
+              "ui.apps",
+              "core",
+              "component",
+              "sling-model"
+            ]
+          },
+          "result": {
+            "passed": true,
+            "issues": [
+              {
+                "rule": "size",
+                "severity": "warning",
+                "message": "Proxy component + HTL override + Sling Model + policy schema override + JUnit tests is at the upper edge of one sitting. If policy schema override turns out to require a custom cq:dialog rather than inheriting Core List's, split it into a sibling task."
+              },
+              {
+                "rule": "specificity",
+                "severity": "warning",
+                "message": "`<appId>` placeholder is resolved by a prerequisite step rather than a literal path. Acceptable, but the implementer should resolve it (and the Sling Model package) before opening the issue to avoid mid-work ambiguity."
+              },
+              {
+                "rule": "acceptance_criteria",
+                "severity": "warning",
+                "message": "AC #1 sample output `5:25` matches the `H:mm` (no zero-pad) format string — confirm with T-008 that this is the intended pattern (vs. `HH:mm`) so the two components don't diverge."
+              }
+            ],
+            "rationale": "All prior blockers are resolved: T-008 is now an explicit dependency, the date-format contract is inlined verbatim, the missing-`releaseDate` edge case is decided (excluded), the Core List version is pinned to v4, and T-002 covers the page-property prerequisites. Acceptance criteria are concrete, observable, and cover the city-present, city-absent, date-absent, policy, and unit-test paths. Remaining concerns are non-blocking: scope is at the upper bound of one sitting, the `<appId>` segment is a prerequisite lookup rather than a literal, and the `H:mm` vs `HH:mm` choice should be confirmed against T-008. Approve as-is.",
+            "validator": "claude-cli"
+          }
+        }
+      ]
+    },
+    {
+      "localId": "T-017",
+      "title": "Wire Newsroom List into press-release template as locked Related Posts region",
+      "iterations": 1,
+      "passed": true,
+      "finalDraft": {
+        "localId": "T-017",
+        "title": "Wire Newsroom List into press-release template as locked Related Posts region",
+        "description": "Why: Region 5 needs to land in the template as a locked component with a default policy (sort by `releaseDate` desc, max 3 items, scoped to the Newsroom Media Releases parent path).\n\nWhat: In the template structure (T-004), add a locked instance of the Newsroom List component (T-016) in the left rail position (per the source DOM where `.side-navigation-wrapper` precedes `.content-wrapper`). The author cannot delete or reconfigure this instance — its behaviour is controlled by the policy in T-018.",
+        "acceptance_criteria": [
+          "Given a press-release page renders, when the HTML is inspected, then a Related Posts list appears with up to 3 items in the page layout, sourced from the configured policy.",
+          "Given an author opens the page in the editor, when they click the Related Posts component, then it is locked (no delete, no reorder) but can be inspected.",
+          "Given there are fewer than 3 candidate newsroom pages, when the list renders, then it shows the available items without erroring or padding."
+        ],
+        "dependencies": [
+          "T-004",
+          "T-016"
+        ],
+        "type": "task",
+        "priority": "P2",
+        "labels": [
+          "agent-beads",
+          "aem",
+          "ui.content",
+          "templates"
+        ]
+      },
+      "history": [
+        {
+          "draft": {
+            "localId": "T-017",
+            "title": "Wire Newsroom List into press-release template as locked Related Posts region",
+            "description": "Why: Region 5 needs to land in the template as a locked component with a default policy (sort by `releaseDate` desc, max 3 items, scoped to the Newsroom Media Releases parent path).\n\nWhat: In the template structure (T-004), add a locked instance of the Newsroom List component (T-016) in the left rail position (per the source DOM where `.side-navigation-wrapper` precedes `.content-wrapper`). The author cannot delete or reconfigure this instance — its behaviour is controlled by the policy in T-018.",
+            "acceptance_criteria": [
+              "Given a press-release page renders, when the HTML is inspected, then a Related Posts list appears with up to 3 items in the page layout, sourced from the configured policy.",
+              "Given an author opens the page in the editor, when they click the Related Posts component, then it is locked (no delete, no reorder) but can be inspected.",
+              "Given there are fewer than 3 candidate newsroom pages, when the list renders, then it shows the available items without erroring or padding."
+            ],
+            "dependencies": [
+              "T-004",
+              "T-016"
+            ],
+            "type": "task",
+            "priority": "P2",
+            "labels": [
+              "agent-beads",
+              "aem",
+              "ui.content",
+              "templates"
+            ]
+          },
+          "result": {
+            "passed": true,
+            "issues": [
+              {
+                "rule": "dependencies",
+                "severity": "warning",
+                "message": "T-018 (policy definition) is referenced as governing behavior but not listed as a dependency; consider adding it if the policy must exist before this task can complete."
+              }
+            ],
+            "rationale": "Task is clear, atomic, and feasible: it locks a Newsroom List instance into the press-release template at a defined DOM position with concrete, testable acceptance criteria covering render, lock state, and empty/partial results. Scope is one-sitting sized and dependencies on T-004 (template) and T-016 (component) are correct. Minor warning: the policy referenced as T-018 is not declared as a dependency, but since this task only wires the locked instance and defers behavior to the policy, it can proceed in parallel — non-blocking.",
+            "validator": "claude-cli"
+          }
+        }
+      ]
+    },
+    {
+      "localId": "T-018",
+      "title": "Author template policies: body container allowed-components, Core Text RTE features, Financial Data Table defaults, Newsroom List query",
+      "iterations": 1,
+      "passed": true,
+      "finalDraft": {
+        "localId": "T-018",
+        "title": "Author template policies: body container allowed-components, Core Text RTE features, Financial Data Table defaults, Newsroom List query",
+        "description": "Why: Section 8 calls out specific policies that must be authored under the press-release template's `policies/` tree to constrain authoring and wire defaults.\n\nWhat: Under `aem-project-archetype/{ARCHETYPE_DIR}/ui.content/.../conf/<site>/settings/wcm/templates/press-release-page/policies/` and `/conf/<site>/settings/wcm/policies/`, author:\n1. **Body Layout Container policy:** allowed components = Core Title, Core Text, Financial Data Table (T-012), Footnotes (T-015). NOTHING else (no Image, no Container, no CTAs).\n2. **Core Text policy:** RTE features include paragraph, bold, italic, lists, links — and **anchor links enabled** (so inline `[n]` superscripts can target `#_ftn<n>`). Disable headings (Decision #1: split components, not RTE headings).\n3. **Core Title policy (in body):** allowed heading levels = H2 only (subheadings); H1 reserved for the locked Article Header title (T-011).\n4. **Financial Data Table policy:** defaults — caption placement (top), striping on, cell-class legend documented.\n5. **Newsroom List policy:** list source = parent path `/content/<site>/newsroom/media-releases`, sort by `releaseDate` desc, max items = 3, optional tag-match against current page's tags.\n6. **Header/Footer XF root container policies:** lock and constrain authoring inside the XFs.\n7. **Page policy:** include the Newsroom site clientlib category (T-006).\n\nEdge cases: policies must be wired to template `policies/` mappings so they take effect.",
+        "acceptance_criteria": [
+          "Given an author opens the body Layout Container, when they click the + button, then ONLY Core Title, Core Text, Financial Data Table, and Footnotes appear as options.",
+          "Given an author edits a body Core Text, when the RTE toolbar is open, then the anchor-link feature is available and headings are NOT.",
+          "Given an author adds a Core Title to the body, when they pick a heading level, then only H2 is offered.",
+          "Given the Newsroom List on a press-release page, when it renders without per-page overrides, then it lists newsroom pages sorted `releaseDate` desc, max 3 items, scoped to the Media Releases parent path.",
+          "Given the press-release page renders, when the HTML is inspected, then the Newsroom site clientlib's CSS and JS are loaded (via the page policy)."
+        ],
+        "dependencies": [
+          "T-006",
+          "T-007",
+          "T-011",
+          "T-012",
+          "T-013",
+          "T-014",
+          "T-015",
+          "T-017"
+        ],
+        "type": "task",
+        "priority": "P1",
+        "labels": [
+          "agent-beads",
+          "aem",
+          "ui.content",
+          "policies",
+          "templates"
+        ]
+      },
+      "history": [
+        {
+          "draft": {
+            "localId": "T-018",
+            "title": "Author template policies: body container allowed-components, Core Text RTE features, Financial Data Table defaults, Newsroom List query",
+            "description": "Why: Section 8 calls out specific policies that must be authored under the press-release template's `policies/` tree to constrain authoring and wire defaults.\n\nWhat: Under `aem-project-archetype/{ARCHETYPE_DIR}/ui.content/.../conf/<site>/settings/wcm/templates/press-release-page/policies/` and `/conf/<site>/settings/wcm/policies/`, author:\n1. **Body Layout Container policy:** allowed components = Core Title, Core Text, Financial Data Table (T-012), Footnotes (T-015). NOTHING else (no Image, no Container, no CTAs).\n2. **Core Text policy:** RTE features include paragraph, bold, italic, lists, links — and **anchor links enabled** (so inline `[n]` superscripts can target `#_ftn<n>`). Disable headings (Decision #1: split components, not RTE headings).\n3. **Core Title policy (in body):** allowed heading levels = H2 only (subheadings); H1 reserved for the locked Article Header title (T-011).\n4. **Financial Data Table policy:** defaults — caption placement (top), striping on, cell-class legend documented.\n5. **Newsroom List policy:** list source = parent path `/content/<site>/newsroom/media-releases`, sort by `releaseDate` desc, max items = 3, optional tag-match against current page's tags.\n6. **Header/Footer XF root container policies:** lock and constrain authoring inside the XFs.\n7. **Page policy:** include the Newsroom site clientlib category (T-006).\n\nEdge cases: policies must be wired to template `policies/` mappings so they take effect.",
+            "acceptance_criteria": [
+              "Given an author opens the body Layout Container, when they click the + button, then ONLY Core Title, Core Text, Financial Data Table, and Footnotes appear as options.",
+              "Given an author edits a body Core Text, when the RTE toolbar is open, then the anchor-link feature is available and headings are NOT.",
+              "Given an author adds a Core Title to the body, when they pick a heading level, then only H2 is offered.",
+              "Given the Newsroom List on a press-release page, when it renders without per-page overrides, then it lists newsroom pages sorted `releaseDate` desc, max 3 items, scoped to the Media Releases parent path.",
+              "Given the press-release page renders, when the HTML is inspected, then the Newsroom site clientlib's CSS and JS are loaded (via the page policy)."
+            ],
+            "dependencies": [
+              "T-006",
+              "T-007",
+              "T-011",
+              "T-012",
+              "T-013",
+              "T-014",
+              "T-015",
+              "T-017"
+            ],
+            "type": "task",
+            "priority": "P1",
+            "labels": [
+              "agent-beads",
+              "aem",
+              "ui.content",
+              "policies",
+              "templates"
+            ]
+          },
+          "result": {
+            "passed": true,
+            "issues": [
+              {
+                "rule": "size",
+                "severity": "warning",
+                "message": "Authoring 7 distinct policies (body container, Core Text, Core Title, Financial Data Table, Newsroom List, XF containers, Page) in one task is on the upper edge of one-sitting scope; consider splitting if it exceeds ~1 day."
+              },
+              {
+                "rule": "acceptance_criteria",
+                "severity": "warning",
+                "message": "No explicit AC for the Financial Data Table defaults (caption top, striping on, legend) or for Header/Footer XF container lock policies — both are listed in the description but not verified."
+              }
+            ],
+            "rationale": "Task is concrete, well-scoped to a known archetype path, has testable Given/When/Then ACs, and dependencies match the referenced predecessor tasks (T-006 clientlib, T-011 header, T-012 table, T-015 footnotes). Two warnings on size and AC coverage are non-blocking; the task is acceptable as-is.",
+            "validator": "claude-cli"
+          }
+        }
+      ]
+    },
+    {
+      "localId": "T-019",
+      "title": "Add SCSS for press-release page chrome, article body, table, footnotes, and share/print",
+      "iterations": 1,
+      "passed": true,
+      "finalDraft": {
+        "localId": "T-019",
+        "title": "Add SCSS for press-release page chrome, article body, table, footnotes, and share/print",
+        "description": "Why: Section 8 calls for SCSS scaffolding under `ui.frontend` that lands in the Newsroom clientlib (T-006). Stage 3 will refine pixel parity; Stage 2 needs structural-correct styling so the page is recognizable and policies apply visually.\n\nWhat: Under `aem-project-archetype/{ARCHETYPE_DIR}/ui.frontend/src/.../newsroom/`, add SCSS partials for:\n- Global header (incl. Newsroom nav-tools row) — basic layout, active-state red accent.\n- Global footer — column layout, social icon row, copyright typography.\n- Article header — uppercase title treatment, meta line typography.\n- Article body — paragraph/subheading typography, intro paragraph emphasis.\n- Financial Data Table — striped rows, numeric-column alignment, positive/negative cell highlighting (`cell-positive` / `cell-negative`), `.no-header` visual-header first row pattern.\n- Footnotes — superscript inline marker styling, return-arrow on entry line.\n- Social Share + Print button — icon sizing, hover states.\n- Related Posts — list typography, conditional city span treatment.\n\nWire these partials into the Newsroom clientlib's `css.txt` (T-006).\n\nNot in scope: pixel-parity matching (Stage 3).",
+        "acceptance_criteria": [
+          "Given a press-release page renders in the browser, when the developer tools are open, then SCSS-compiled rules are present for the article header, body, table, footnotes, share row, footer, and related posts (no \"unstyled\" appearance).",
+          "Given the Financial Data Table renders with striped rows, when inspected, then odd/even rows visually alternate via the `striped` class.",
+          "Given a `cell-positive` cell, when rendered, then it is visually distinct from a `cell-negative` cell (color treatment per Stage 2 placeholder palette).",
+          "Given the Newsroom nav with `Media Releases` active, when rendered, then the active tab uses the red accent color (matching the source's `rgb(227, 0, 27)` directionally; exact hex is Stage 3)."
+        ],
+        "dependencies": [
+          "T-006"
+        ],
+        "type": "task",
+        "priority": "P2",
+        "labels": [
+          "agent-beads",
+          "aem",
+          "ui.frontend",
+          "scss",
+          "styling"
+        ]
+      },
+      "history": [
+        {
+          "draft": {
+            "localId": "T-019",
+            "title": "Add SCSS for press-release page chrome, article body, table, footnotes, and share/print",
+            "description": "Why: Section 8 calls for SCSS scaffolding under `ui.frontend` that lands in the Newsroom clientlib (T-006). Stage 3 will refine pixel parity; Stage 2 needs structural-correct styling so the page is recognizable and policies apply visually.\n\nWhat: Under `aem-project-archetype/{ARCHETYPE_DIR}/ui.frontend/src/.../newsroom/`, add SCSS partials for:\n- Global header (incl. Newsroom nav-tools row) — basic layout, active-state red accent.\n- Global footer — column layout, social icon row, copyright typography.\n- Article header — uppercase title treatment, meta line typography.\n- Article body — paragraph/subheading typography, intro paragraph emphasis.\n- Financial Data Table — striped rows, numeric-column alignment, positive/negative cell highlighting (`cell-positive` / `cell-negative`), `.no-header` visual-header first row pattern.\n- Footnotes — superscript inline marker styling, return-arrow on entry line.\n- Social Share + Print button — icon sizing, hover states.\n- Related Posts — list typography, conditional city span treatment.\n\nWire these partials into the Newsroom clientlib's `css.txt` (T-006).\n\nNot in scope: pixel-parity matching (Stage 3).",
+            "acceptance_criteria": [
+              "Given a press-release page renders in the browser, when the developer tools are open, then SCSS-compiled rules are present for the article header, body, table, footnotes, share row, footer, and related posts (no \"unstyled\" appearance).",
+              "Given the Financial Data Table renders with striped rows, when inspected, then odd/even rows visually alternate via the `striped` class.",
+              "Given a `cell-positive` cell, when rendered, then it is visually distinct from a `cell-negative` cell (color treatment per Stage 2 placeholder palette).",
+              "Given the Newsroom nav with `Media Releases` active, when rendered, then the active tab uses the red accent color (matching the source's `rgb(227, 0, 27)` directionally; exact hex is Stage 3)."
+            ],
+            "dependencies": [
+              "T-006"
+            ],
+            "type": "task",
+            "priority": "P2",
+            "labels": [
+              "agent-beads",
+              "aem",
+              "ui.frontend",
+              "scss",
+              "styling"
+            ]
+          },
+          "result": {
+            "passed": true,
+            "issues": [
+              {
+                "rule": "size",
+                "severity": "warning",
+                "message": "Eight distinct SCSS partials (header, footer, article header/body, table, footnotes, share/print, related posts) plus clientlib wiring is on the upper edge of one sitting; consider splitting global chrome (header/footer) from article-specific partials if it slips."
+              },
+              {
+                "rule": "acceptance_criteria",
+                "severity": "warning",
+                "message": "AC covers table striping, positive/negative cells, nav active state, and general 'styled' presence, but does not explicitly assert footnotes superscript/return-arrow, share/print hover, or `.no-header` first-row pattern called out in scope. Consider adding observable checks for those."
+              },
+              {
+                "rule": "specificity",
+                "severity": "warning",
+                "message": "Path uses `{ARCHETYPE_DIR}` placeholder and `.../newsroom/`; resolve the concrete directory before starting to avoid two engineers picking different locations."
+              }
+            ],
+            "rationale": "Task is clear in intent, feasible, scoped to Stage 2 (structural styling, not pixel parity), has a real dependency on T-006, and ships testable acceptance criteria. Warnings around size, AC coverage of footnotes/share/no-header, and the unresolved `{ARCHETYPE_DIR}` placeholder are non-blocking; the draft is good to write as-is.",
+            "validator": "claude-cli"
+          }
+        }
+      ]
+    },
+    {
+      "localId": "T-020",
+      "title": "Add `window.print()` JS handler for Print Friendly Version button in Newsroom clientlib",
+      "iterations": 1,
+      "passed": true,
+      "finalDraft": {
+        "localId": "T-020",
+        "title": "Add `window.print()` JS handler for Print Friendly Version button in Newsroom clientlib",
+        "description": "Why: Decision #9 — Print is a `<button>` with a `window.print()` handler. The handler lives in the Newsroom site clientlib's JS so it loads on every press-release page.\n\nWhat: In the Newsroom clientlib JS (T-006), add a small handler:\n```\ndocument.addEventListener('click', (e) => {\n  const btn = e.target.closest('[data-print-trigger]');\n  if (btn) { e.preventDefault(); window.print(); }\n});\n```\nWire the JS file into the clientlib's `js.txt`. Use event delegation so multiple share rows on a page (unlikely but possible) all work.\n\nEdge cases: handler must be idempotent (no duplicate listeners). No external print-service URL, no dedicated print view.",
+        "acceptance_criteria": [
+          "Given a press-release page is loaded, when a user clicks the Print Friendly Version button, then `window.print()` is invoked and the browser's print dialog opens.",
+          "Given the JS file, when reviewed, then it uses event delegation (single listener on `document`) and short-circuits cleanly when the click target is not a print trigger.",
+          "Given an automated test or manual smoke test, when the button is clicked twice in quick succession, then `window.print()` is called twice (no deduping needed) and no console errors appear."
+        ],
+        "dependencies": [
+          "T-006",
+          "T-010"
+        ],
+        "type": "task",
+        "priority": "P2",
+        "labels": [
+          "agent-beads",
+          "aem",
+          "ui.frontend",
+          "javascript",
+          "clientlibs"
+        ]
+      },
+      "history": [
+        {
+          "draft": {
+            "localId": "T-020",
+            "title": "Add `window.print()` JS handler for Print Friendly Version button in Newsroom clientlib",
+            "description": "Why: Decision #9 — Print is a `<button>` with a `window.print()` handler. The handler lives in the Newsroom site clientlib's JS so it loads on every press-release page.\n\nWhat: In the Newsroom clientlib JS (T-006), add a small handler:\n```\ndocument.addEventListener('click', (e) => {\n  const btn = e.target.closest('[data-print-trigger]');\n  if (btn) { e.preventDefault(); window.print(); }\n});\n```\nWire the JS file into the clientlib's `js.txt`. Use event delegation so multiple share rows on a page (unlikely but possible) all work.\n\nEdge cases: handler must be idempotent (no duplicate listeners). No external print-service URL, no dedicated print view.",
+            "acceptance_criteria": [
+              "Given a press-release page is loaded, when a user clicks the Print Friendly Version button, then `window.print()` is invoked and the browser's print dialog opens.",
+              "Given the JS file, when reviewed, then it uses event delegation (single listener on `document`) and short-circuits cleanly when the click target is not a print trigger.",
+              "Given an automated test or manual smoke test, when the button is clicked twice in quick succession, then `window.print()` is called twice (no deduping needed) and no console errors appear."
+            ],
+            "dependencies": [
+              "T-006",
+              "T-010"
+            ],
+            "type": "task",
+            "priority": "P2",
+            "labels": [
+              "agent-beads",
+              "aem",
+              "ui.frontend",
+              "javascript",
+              "clientlibs"
+            ]
+          },
+          "result": {
+            "passed": true,
+            "issues": [],
+            "rationale": "Task is clear, atomic, and feasible: a small JS handler added to an existing Newsroom clientlib with concrete code sketch, event delegation, idempotency note, and three testable Given/When/Then criteria. Dependencies on T-006 (clientlib) and T-010 (button markup with data-print-trigger) are real and stated. Size is well under one sitting. No blockers.",
+            "validator": "claude-cli"
+          }
+        }
+      ]
+    },
+    {
+      "localId": "T-021",
+      "title": "Scaffold i18n bundle with Newsroom strings (English-only)",
+      "iterations": 1,
+      "passed": true,
+      "finalDraft": {
+        "localId": "T-021",
+        "title": "Scaffold i18n bundle with Newsroom strings (English-only)",
+        "description": "Why: Section 8 calls out i18n scaffolding for: \"Published on\", \"Print Friendly Version\", \"Related Posts\", \"Share on Facebook\", \"Share on Twitter/X\", plus table/footnote labels. English-only today but kept extensible.\n\nWhat: Under `aem-project-archetype/{ARCHETYPE_DIR}/ui.apps/.../i18n/en.json` (or the archetype's i18n location — Sling i18n dictionary node `mix:language`), add keys for:\n- `newsroom.published-on` = `Published on`\n- `newsroom.print-friendly` = `Print Friendly Version`\n- `newsroom.related-posts` = `Related Posts`\n- `newsroom.share.facebook` = `Share on Facebook`\n- `newsroom.share.twitter` = `Share on Twitter/X`\n- `newsroom.copyright` = `© The Official News Room of Qantas Airways Limited ABN 16 009 661 901`\n- `newsroom.footnotes.return` = `Return to text`\n\nReference these from the relevant HTL files (T-008, T-010, T-014, T-015, T-016).\n\nEdge cases: keys must be namespaced (`newsroom.*`) so future Newsroom components reuse the bundle.",
+        "acceptance_criteria": [
+          "Given the i18n dictionary, when inspected, then all 7 keys above are present with the specified English values.",
+          "Given the press-release page renders with locale=`en`, when the HTML is inspected, then the literal English strings come from the i18n bundle (verified by changing a key and seeing the rendered output update).",
+          "Given the share row, when rendered, then the Facebook anchor's `aria-label` is sourced from `newsroom.share.facebook`."
+        ],
+        "dependencies": [
+          "T-008",
+          "T-010",
+          "T-014",
+          "T-015",
+          "T-016"
+        ],
+        "type": "task",
+        "priority": "P2",
+        "labels": [
+          "agent-beads",
+          "aem",
+          "ui.apps",
+          "i18n"
+        ]
+      },
+      "history": [
+        {
+          "draft": {
+            "localId": "T-021",
+            "title": "Scaffold i18n bundle with Newsroom strings (English-only)",
+            "description": "Why: Section 8 calls out i18n scaffolding for: \"Published on\", \"Print Friendly Version\", \"Related Posts\", \"Share on Facebook\", \"Share on Twitter/X\", plus table/footnote labels. English-only today but kept extensible.\n\nWhat: Under `aem-project-archetype/{ARCHETYPE_DIR}/ui.apps/.../i18n/en.json` (or the archetype's i18n location — Sling i18n dictionary node `mix:language`), add keys for:\n- `newsroom.published-on` = `Published on`\n- `newsroom.print-friendly` = `Print Friendly Version`\n- `newsroom.related-posts` = `Related Posts`\n- `newsroom.share.facebook` = `Share on Facebook`\n- `newsroom.share.twitter` = `Share on Twitter/X`\n- `newsroom.copyright` = `© The Official News Room of Qantas Airways Limited ABN 16 009 661 901`\n- `newsroom.footnotes.return` = `Return to text`\n\nReference these from the relevant HTL files (T-008, T-010, T-014, T-015, T-016).\n\nEdge cases: keys must be namespaced (`newsroom.*`) so future Newsroom components reuse the bundle.",
+            "acceptance_criteria": [
+              "Given the i18n dictionary, when inspected, then all 7 keys above are present with the specified English values.",
+              "Given the press-release page renders with locale=`en`, when the HTML is inspected, then the literal English strings come from the i18n bundle (verified by changing a key and seeing the rendered output update).",
+              "Given the share row, when rendered, then the Facebook anchor's `aria-label` is sourced from `newsroom.share.facebook`."
+            ],
+            "dependencies": [
+              "T-008",
+              "T-010",
+              "T-014",
+              "T-015",
+              "T-016"
+            ],
+            "type": "task",
+            "priority": "P2",
+            "labels": [
+              "agent-beads",
+              "aem",
+              "ui.apps",
+              "i18n"
+            ]
+          },
+          "result": {
+            "passed": true,
+            "issues": [
+              {
+                "rule": "specificity",
+                "severity": "warning",
+                "message": "The exact i18n dictionary path uses an `{ARCHETYPE_DIR}` placeholder; resolving it before implementation will avoid ambiguity, but the Sling i18n convention is clear enough to proceed."
+              },
+              {
+                "rule": "dependencies",
+                "severity": "warning",
+                "message": "Listing T-008/T-010/T-014/T-015/T-016 as hard dependencies may be stricter than needed — the bundle can land first and HTL files can reference keys as they're built. Consider making these soft/related."
+              }
+            ],
+            "rationale": "Task is clear, atomic, and one-sitting sized: add 7 namespaced keys to the Sling i18n dictionary and wire them into existing HTL templates. Acceptance criteria are concrete and testable (key presence, render-from-bundle verification, aria-label sourcing). Feasible with standard AEM i18n primitives. Minor warnings on the unresolved archetype path placeholder and possibly over-tight deps, but neither blocks execution.",
+            "validator": "claude-cli"
+          }
+        }
+      ]
+    },
+    {
+      "localId": "T-022",
+      "title": "Create seed press-release page for \"Qantas Group Market Update – April 2026\"",
+      "iterations": 1,
+      "passed": true,
+      "finalDraft": {
+        "localId": "T-022",
+        "title": "Create seed press-release page for \"Qantas Group Market Update – April 2026\"",
+        "description": "Why: The plan calls for a seed page under `content/<site>/newsroom/media-releases/qantas-group-market-update-april-2026/` so reviewers can validate the full structure end-to-end against the source HTML/screenshot.\n\nWhat: Under `aem-project-archetype/{ARCHETYPE_DIR}/ui.content/.../content/<site>/newsroom/media-releases/qantas-group-market-update-april-2026/`, create a `cq:Page` from the press-release template (T-004) with:\n- `jcr:title` = `QANTAS GROUP MARKET UPDATE – APRIL 2026`\n- `releaseDate` = `2026-04-14T09:03:00` (per `publisheddate` source meta)\n- `releaseCity` = (leave empty — source page itself has no city; the field is for related-list consumers)\n- `intro` = the lead paragraph from the source HTML's `<meta name=\"intro\">`.\n- Body container populated with: 3 subheading+text pairs (`Fuel outlook`, `Customers, capacity and fares`, `Financial Framework`) reproducing the source paragraphs, the Qantas Group capacity table (7 data rows × 5 columns) authored via T-012's component, and 4 footnote entries authored via T-015's component.\n- Inline `[1]`–`[4]` superscripts in body Core Text linking to `#_ftn1`–`#_ftn4`.\n- Page metadata: canonical URL, `og:title`, `og:url`, `og:image` (placeholder if source asset not migrated), `twitter:*` per source `<head>`.\n\nEdge cases: rich-text content must be migrated faithfully (no paraphrasing). The capacity table values come directly from source.",
+        "acceptance_criteria": [
+          "Given the seed page is published, when the page is rendered, then it visually reproduces the source's region order: header, article header (title + \"Published on 14th April 2026 at 9:03\" + share row), body with 3 subheadings + table + footnotes, related posts, footer.",
+          "Given the rendered body, when inspected, then exactly 7 data rows × 5 columns appear in the Financial Data Table component output, matching the source values cell-for-cell.",
+          "Given the rendered footnotes block, when inspected, then 4 entries appear with `id=\"_ftn1\"`–`id=\"_ftn4\"` and matching return-anchors.",
+          "Given inline `[1]` in the body, when clicked, then the browser scrolls to the first footnote entry.",
+          "Given the page `<head>`, when inspected, then `og:title`, `og:url`, `og:description` (from `intro`), `twitter:*`, and `canonical` are all present and correct."
+        ],
+        "dependencies": [
+          "T-002",
+          "T-003",
+          "T-004",
+          "T-005",
+          "T-007",
+          "T-008",
+          "T-009",
+          "T-010",
+          "T-011",
+          "T-012",
+          "T-013",
+          "T-014",
+          "T-015",
+          "T-016",
+          "T-017",
+          "T-018"
+        ],
+        "type": "task",
+        "priority": "P1",
+        "labels": [
+          "agent-beads",
+          "aem",
+          "ui.content",
+          "seed-content",
+          "validation"
+        ]
+      },
+      "history": [
+        {
+          "draft": {
+            "localId": "T-022",
+            "title": "Create seed press-release page for \"Qantas Group Market Update – April 2026\"",
+            "description": "Why: The plan calls for a seed page under `content/<site>/newsroom/media-releases/qantas-group-market-update-april-2026/` so reviewers can validate the full structure end-to-end against the source HTML/screenshot.\n\nWhat: Under `aem-project-archetype/{ARCHETYPE_DIR}/ui.content/.../content/<site>/newsroom/media-releases/qantas-group-market-update-april-2026/`, create a `cq:Page` from the press-release template (T-004) with:\n- `jcr:title` = `QANTAS GROUP MARKET UPDATE – APRIL 2026`\n- `releaseDate` = `2026-04-14T09:03:00` (per `publisheddate` source meta)\n- `releaseCity` = (leave empty — source page itself has no city; the field is for related-list consumers)\n- `intro` = the lead paragraph from the source HTML's `<meta name=\"intro\">`.\n- Body container populated with: 3 subheading+text pairs (`Fuel outlook`, `Customers, capacity and fares`, `Financial Framework`) reproducing the source paragraphs, the Qantas Group capacity table (7 data rows × 5 columns) authored via T-012's component, and 4 footnote entries authored via T-015's component.\n- Inline `[1]`–`[4]` superscripts in body Core Text linking to `#_ftn1`–`#_ftn4`.\n- Page metadata: canonical URL, `og:title`, `og:url`, `og:image` (placeholder if source asset not migrated), `twitter:*` per source `<head>`.\n\nEdge cases: rich-text content must be migrated faithfully (no paraphrasing). The capacity table values come directly from source.",
+            "acceptance_criteria": [
+              "Given the seed page is published, when the page is rendered, then it visually reproduces the source's region order: header, article header (title + \"Published on 14th April 2026 at 9:03\" + share row), body with 3 subheadings + table + footnotes, related posts, footer.",
+              "Given the rendered body, when inspected, then exactly 7 data rows × 5 columns appear in the Financial Data Table component output, matching the source values cell-for-cell.",
+              "Given the rendered footnotes block, when inspected, then 4 entries appear with `id=\"_ftn1\"`–`id=\"_ftn4\"` and matching return-anchors.",
+              "Given inline `[1]` in the body, when clicked, then the browser scrolls to the first footnote entry.",
+              "Given the page `<head>`, when inspected, then `og:title`, `og:url`, `og:description` (from `intro`), `twitter:*`, and `canonical` are all present and correct."
+            ],
+            "dependencies": [
+              "T-002",
+              "T-003",
+              "T-004",
+              "T-005",
+              "T-007",
+              "T-008",
+              "T-009",
+              "T-010",
+              "T-011",
+              "T-012",
+              "T-013",
+              "T-014",
+              "T-015",
+              "T-016",
+              "T-017",
+              "T-018"
+            ],
+            "type": "task",
+            "priority": "P1",
+            "labels": [
+              "agent-beads",
+              "aem",
+              "ui.content",
+              "seed-content",
+              "validation"
+            ]
+          },
+          "result": {
+            "passed": true,
+            "issues": [
+              {
+                "rule": "size",
+                "severity": "warning",
+                "message": "Authoring 3 subheading+text pairs, a 7×5 table, 4 footnotes, inline superscript links, and full head metadata may push beyond a single sitting; consider splitting body authoring vs. metadata if it slips."
+              },
+              {
+                "rule": "dependencies",
+                "severity": "warning",
+                "message": "16 declared dependencies is a lot; verify each (T-002, T-003, T-005, T-007–T-011, T-013, T-014, T-016–T-018) is genuinely required for seeding this single page rather than transitively pulled in."
+              },
+              {
+                "rule": "specificity",
+                "severity": "warning",
+                "message": "`{ARCHETYPE_DIR}` placeholder and `og:image` 'placeholder if source asset not migrated' leave small ambiguities; pin the exact path and the placeholder asset reference before starting."
+              }
+            ],
+            "rationale": "Task is clear, feasible, concrete, and has testable acceptance criteria covering structure, table dimensions, footnote anchors, inline link behavior, and head metadata. Dependencies on the template (T-004), table component (T-012), and footnotes component (T-015) are explicitly stated. Warnings on size, dependency breadth, and two minor placeholders are non-blocking — the task can be picked up as soon as its prerequisites land.",
+            "validator": "claude-cli"
+          }
+        }
+      ]
+    },
+    {
+      "localId": "T-023",
+      "title": "Write JUnit tests for new Sling Models (ArticleMeta, NewsroomListItem, FinancialDataTable, Footnotes)",
+      "iterations": 1,
+      "passed": true,
+      "finalDraft": {
+        "localId": "T-023",
+        "title": "Write JUnit tests for new Sling Models (ArticleMeta, NewsroomListItem, FinancialDataTable, Footnotes)",
+        "description": "Why: Section 8 requires unit tests under `aem-project-archetype/{ARCHETYPE_DIR}/core/src/test` for any new Sling Model introduced.\n\nWhat: Add JUnit + AEM Mocks tests covering:\n1. `ArticleMetaModel` (T-008): date formatting (ordinal suffixes 1st/2nd/3rd/4th–10th/11th–13th/21st/22nd/23rd/31st), null `releaseDate`, missing page properties.\n2. `NewsroomListItemModel` (T-016): null `releaseCity` returns null and HTL omits span; populated `releaseCity` returns string; date formatting reuses ordinal logic.\n3. `FinancialDataTableModel` (T-012, if added): row/cell normalization, `cellClass` mapping (none/positive/negative), `footnoteRef` superscript emission, missing-cell tolerance.\n4. `FootnotesModel` (T-015, if added): deterministic 1-based indexing, empty list returns no output, return-anchor IDs match.\n\nUse `io.wcm.testing.mock.aem` or `org.apache.sling.testing.mock.sling` per archetype convention. Aim for ≥ 80% line coverage on each model.",
+        "acceptance_criteria": [
+          "Given the test suite is run via `mvn test` from `aem-project-archetype/{ARCHETYPE_DIR}/core/`, when tests complete, then all model tests pass with ≥ 80% line coverage on each model.",
+          "Given the `ArticleMetaModel` ordinal-suffix test, when run with day values 1, 2, 3, 4, 11, 21, 22, 31, then assertions confirm 1st, 2nd, 3rd, 4th, 11th, 21st, 22nd, 31st.",
+          "Given the `NewsroomListItemModel` test for null city, when assertions run, then `getCity()` returns null and a follow-up HTL render assertion confirms the city span is absent.",
+          "Given a CI build, when the test phase runs, then no model is left untested (verified by JaCoCo report or equivalent)."
+        ],
+        "dependencies": [
+          "T-008",
+          "T-012",
+          "T-015",
+          "T-016"
+        ],
+        "type": "task",
+        "priority": "P2",
+        "labels": [
+          "agent-beads",
+          "aem",
+          "core",
+          "testing",
+          "junit"
+        ]
+      },
+      "history": [
+        {
+          "draft": {
+            "localId": "T-023",
+            "title": "Write JUnit tests for new Sling Models (ArticleMeta, NewsroomListItem, FinancialDataTable, Footnotes)",
+            "description": "Why: Section 8 requires unit tests under `aem-project-archetype/{ARCHETYPE_DIR}/core/src/test` for any new Sling Model introduced.\n\nWhat: Add JUnit + AEM Mocks tests covering:\n1. `ArticleMetaModel` (T-008): date formatting (ordinal suffixes 1st/2nd/3rd/4th–10th/11th–13th/21st/22nd/23rd/31st), null `releaseDate`, missing page properties.\n2. `NewsroomListItemModel` (T-016): null `releaseCity` returns null and HTL omits span; populated `releaseCity` returns string; date formatting reuses ordinal logic.\n3. `FinancialDataTableModel` (T-012, if added): row/cell normalization, `cellClass` mapping (none/positive/negative), `footnoteRef` superscript emission, missing-cell tolerance.\n4. `FootnotesModel` (T-015, if added): deterministic 1-based indexing, empty list returns no output, return-anchor IDs match.\n\nUse `io.wcm.testing.mock.aem` or `org.apache.sling.testing.mock.sling` per archetype convention. Aim for ≥ 80% line coverage on each model.",
+            "acceptance_criteria": [
+              "Given the test suite is run via `mvn test` from `aem-project-archetype/{ARCHETYPE_DIR}/core/`, when tests complete, then all model tests pass with ≥ 80% line coverage on each model.",
+              "Given the `ArticleMetaModel` ordinal-suffix test, when run with day values 1, 2, 3, 4, 11, 21, 22, 31, then assertions confirm 1st, 2nd, 3rd, 4th, 11th, 21st, 22nd, 31st.",
+              "Given the `NewsroomListItemModel` test for null city, when assertions run, then `getCity()` returns null and a follow-up HTL render assertion confirms the city span is absent.",
+              "Given a CI build, when the test phase runs, then no model is left untested (verified by JaCoCo report or equivalent)."
+            ],
+            "dependencies": [
+              "T-008",
+              "T-012",
+              "T-015",
+              "T-016"
+            ],
+            "type": "task",
+            "priority": "P2",
+            "labels": [
+              "agent-beads",
+              "aem",
+              "core",
+              "testing",
+              "junit"
+            ]
+          },
+          "result": {
+            "passed": true,
+            "issues": [
+              {
+                "rule": "size",
+                "severity": "warning",
+                "message": "Covers four distinct models — borderline for one sitting. Consider splitting per model if any single model's tests grow beyond expected scope."
+              },
+              {
+                "rule": "dependencies",
+                "severity": "warning",
+                "message": "T-012 and T-015 are marked 'if added' in the description; if those models are not implemented, scope must shrink accordingly. Consider conditional handling or splitting."
+              }
+            ],
+            "rationale": "Task is clear, specific, testable, and properly scoped with concrete acceptance criteria including exact ordinal values and coverage thresholds. Dependencies on the model-implementing tasks are correctly stated. Minor warnings on size (4 models) and conditional dependencies do not block.",
+            "validator": "claude-cli"
+          }
+        }
+      ]
+    },
+    {
+      "localId": "T-024",
+      "title": "Verify build, deploy, and end-to-end render of seed press-release page",
+      "iterations": 1,
+      "passed": true,
+      "finalDraft": {
+        "localId": "T-024",
+        "title": "Verify build, deploy, and end-to-end render of seed press-release page",
+        "description": "Why: Verification before completion. Once all components, templates, XFs, policies, clientlibs, content, and tests are in place, the full archetype must build and the seed page must render correctly on a local AEM SDK instance (or equivalent integration target).\n\nWhat:\n1. Run `mvn clean install` from `aem-project-archetype/{ARCHETYPE_DIR}/` (or the archetype's reactor root).\n2. Deploy the resulting `all` package to a local AEM SDK author.\n3. Open the seed page (T-022) in author and publish it.\n4. Verify on publish: page renders, all six regions appear in correct order, share links open correctly, print button triggers print dialog, related-posts list populates, footnote anchors navigate correctly, page metadata is in `<head>`.\n5. Run `mvn verify` to ensure JUnit tests (T-023) pass in the build.\n6. Document any defects as follow-up beads issues; do NOT close until the page renders cleanly.",
+        "acceptance_criteria": [
+          "Given a clean local AEM SDK author, when the archetype's `all` package is deployed, then the deployment succeeds with no `OakConflict` or installation errors.",
+          "Given the seed page is published, when the published URL is fetched and inspected, then all six regions render in correct order with content matching the source.",
+          "Given an end-to-end click-through, when a user clicks Facebook share / Twitter share / Print / a footnote `[1]` superscript / a Related Posts entry, then each behaves per spec (new-tab share dialog / browser print dialog / scroll-to-anchor / navigate to listed page).",
+          "Given the build, when `mvn verify` is run, then all unit tests (T-023) pass with the coverage thresholds met."
+        ],
+        "dependencies": [
+          "T-018",
+          "T-019",
+          "T-020",
+          "T-021",
+          "T-022",
+          "T-023"
+        ],
+        "type": "task",
+        "priority": "P0",
+        "labels": [
+          "agent-beads",
+          "aem",
+          "build",
+          "verification",
+          "qa"
+        ]
+      },
+      "history": [
+        {
+          "draft": {
+            "localId": "T-024",
+            "title": "Verify build, deploy, and end-to-end render of seed press-release page",
+            "description": "Why: Verification before completion. Once all components, templates, XFs, policies, clientlibs, content, and tests are in place, the full archetype must build and the seed page must render correctly on a local AEM SDK instance (or equivalent integration target).\n\nWhat:\n1. Run `mvn clean install` from `aem-project-archetype/{ARCHETYPE_DIR}/` (or the archetype's reactor root).\n2. Deploy the resulting `all` package to a local AEM SDK author.\n3. Open the seed page (T-022) in author and publish it.\n4. Verify on publish: page renders, all six regions appear in correct order, share links open correctly, print button triggers print dialog, related-posts list populates, footnote anchors navigate correctly, page metadata is in `<head>`.\n5. Run `mvn verify` to ensure JUnit tests (T-023) pass in the build.\n6. Document any defects as follow-up beads issues; do NOT close until the page renders cleanly.",
+            "acceptance_criteria": [
+              "Given a clean local AEM SDK author, when the archetype's `all` package is deployed, then the deployment succeeds with no `OakConflict` or installation errors.",
+              "Given the seed page is published, when the published URL is fetched and inspected, then all six regions render in correct order with content matching the source.",
+              "Given an end-to-end click-through, when a user clicks Facebook share / Twitter share / Print / a footnote `[1]` superscript / a Related Posts entry, then each behaves per spec (new-tab share dialog / browser print dialog / scroll-to-anchor / navigate to listed page).",
+              "Given the build, when `mvn verify` is run, then all unit tests (T-023) pass with the coverage thresholds met."
+            ],
+            "dependencies": [
+              "T-018",
+              "T-019",
+              "T-020",
+              "T-021",
+              "T-022",
+              "T-023"
+            ],
+            "type": "task",
+            "priority": "P0",
+            "labels": [
+              "agent-beads",
+              "aem",
+              "build",
+              "verification",
+              "qa"
+            ]
+          },
+          "result": {
+            "passed": true,
+            "issues": [
+              {
+                "rule": "specificity",
+                "severity": "warning",
+                "message": "`{ARCHETYPE_DIR}` placeholder is unresolved — clarify the actual path before execution."
+              },
+              {
+                "rule": "acceptance_criteria",
+                "severity": "warning",
+                "message": "Coverage threshold value is referenced but not stated; ensure T-023 defines the concrete percentage."
+              }
+            ],
+            "rationale": "Task is clear, atomic, and appropriately sized as a final end-to-end verification gate. Dependencies (T-018..T-023) are explicit and real. Acceptance criteria are concrete and testable via deploy + click-through + `mvn verify`. Minor warnings on a path placeholder and coverage threshold reference do not block.",
+            "validator": "claude-cli"
+          }
+        }
+      ]
+    }
+  ]
+}
