@@ -1,0 +1,15 @@
+{
+  "id": "f98b4e19-3fd5-4044-b2ad-992a78657f19",
+  "status": "completed",
+  "startedAt": "2026-05-05T13:40:10.395Z",
+  "updatedAt": "2026-05-05T13:40:42.030Z",
+  "agentPlugin": "claude",
+  "trackerPlugin": "beads",
+  "epicId": "ai-task-decompositor",
+  "currentIteration": 0,
+  "maxIterations": 10,
+  "totalTasks": 0,
+  "tasksCompleted": 0,
+  "cwd": "C:\\SII\\workspace\\ai-task-decompositor",
+  "endedAt": "2026-05-05T13:40:42.030Z"
+}

@@ -1,0 +1,12 @@
+configVersion = "2.1"
+maxIterations = 10
+agent = "claude"
+tracker = "beads"
+autoCommit = true
+subagentTracingDetail = "off"
+defaultTracker = "beads"
+
+[agentOptions]
+[trackerOptions]
+beadsDir = ".beads"
+labels = ""

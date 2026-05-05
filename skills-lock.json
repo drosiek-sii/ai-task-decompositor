@@ -5,6 +5,30 @@
       "source": "smithery.ai",
       "sourceType": "well-known",
       "computedHash": "eb0d4e84cf80a53a89acb529fe454e4c8647a4b59729bf58575eb143bc15451a"
+    },
+    "ralph-tui-create-beads": {
+      "source": "subsy/ralph-tui",
+      "sourceType": "github",
+      "skillPath": "skills/ralph-tui-create-beads/SKILL.md",
+      "computedHash": "12b148cc8a623a95ad8a7681d542850a06ba4735a3b2532db5864edfd8aa73ec"
+    },
+    "ralph-tui-create-beads-rust": {
+      "source": "subsy/ralph-tui",
+      "sourceType": "github",
+      "skillPath": "skills/ralph-tui-create-beads-rust/SKILL.md",
+      "computedHash": "6975b63df8255333718ab719019e454db9d6d17e52fe02079c6ae0414a81b67c"
+    },
+    "ralph-tui-create-json": {
+      "source": "subsy/ralph-tui",
+      "sourceType": "github",
+      "skillPath": "skills/ralph-tui-create-json/SKILL.md",
+      "computedHash": "8ca969385c89c5cbecbfef6429164971afa832fe3b6bb267225bbf4a4909005c"
+    },
+    "ralph-tui-prd": {
+      "source": "subsy/ralph-tui",
+      "sourceType": "github",
+      "skillPath": "skills/ralph-tui-prd/SKILL.md",
+      "computedHash": "4fcfdc2a8ec3c15b60ac73891e90667debf35fa520c691720cbb424cc45dd608"
     }
   }
 }
